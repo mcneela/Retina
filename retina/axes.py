@@ -7,47 +7,89 @@ import matplotlib.pyplot as plt
 from layer import *
 
 class Fovea(metaclass=ABCMeta):
-    
+    """
+    Abstract base class specifying standard layer methods
+    that all Fovea subclasses should implement.
+    """
     @property
     @abstractmethod
     def layers(self):
+        """
+        Each axes should have a dictionary of associated layers.
+        """
         pass
 
     @property
     def active_layer(self):
-       pass
+        """
+        Each axes should have an active layer attribute.
+        """
+        pass
 
     @active_layer.setter
     @abstractmethod
     def active_layer(self, layer):
-       pass
+        """
+        Each axes should provide a means for setting the
+        active layer attribute.
+        """
+        pass
 
     @abstractmethod
     def add_layer(self, layer, **kwargs):
-       pass
+        """
+        Each axes should implement a method for adding
+        layers to itself.
+        """
+        pass
 
     @abstractmethod
     def get_layer(self, layer):
+        """
+        Each axes should allow a user to get the Layer
+        object associated with an axes layer.
+        """
         pass
 
     @abstractmethod
     def save_layer(self, layer, *args, **kwargs):
+        """
+        Each axes should provide a means for saving the
+        artists in a layer to an image file or pdf.
+        """
         pass
 
     @abstractmethod
     def delete_layer(self, layer):
-       pass
+        """
+        Each axes should allow for the deleting of
+        individual layers.
+        """
+        pass
 
     @abstractmethod
     def build_layer(self, layer, **kwargs):
-       pass
+        """
+        Each axes should provide a means for building
+        a single layer.
+        """
+        pass
 
     @abstractmethod
     def build_layers(self):
-       pass
+        """
+        Each axes should implement a method allowing all
+        layers to be built simultaneously using default
+        settings.
+        """
+        pass
 
 
 class Fovea2D(Fovea, Axes):
+    """
+    A class providing layer functionality to standard,
+    2D axes. Inherits from matplotlib.axes.Axes.
+    """
     name = 'Fovea2D'
 
     def __init__(self, *args, **kwargs):
@@ -58,30 +100,63 @@ class Fovea2D(Fovea, Axes):
 
     @property
     def layers(self):
+        """
+        self._layers 'getter' method.
+        """
         return self._layers
 
     @property
     def active_layer(self):
+        """
+        self._active_layer 'getter' method.
+        """
         return self._active_layer
 
     @active_layer.setter
     def active_layer(self, layer):
+        """
+        self._active_layer 'setter' method.
+        """
         self._active_layer = layer
 
     def add_layer(self, layer, **kwargs):
+        """
+        Method to add a layer to the axes.
+
+        **kwargs are passed to Layer constructor.
+        """
         try:
+            # Check to see if layer already exists.
             self._layers[layer]
             print("Layer already exists.")
             return
         except:
+            # If layer does not exist, a new layer
+            # object is instantiated and tracked
+            # by the axes' layers dictionary.
             layer_obj = Layer(layer, **kwargs)
             self._layers[layer] = layer_obj
             setattr(self, layer, layer_obj)
 
     def get_layer(self, layer):
+        """
+        Gets the Layer object associated with the
+        key 'layer' in the axes layers dictionary.
+        """
         return self._layers[layer]
 
     def save_layer(self, layer, *args, **kwargs):
+        """
+        Saves a snapshot of the artists in 'layer'
+        to an image file or pdf.
+
+        *args and **kwargs are passed to
+        matplotlib.pyplot.savefig(). Documentation
+        can be found here:
+            
+        http://matplotlib.org/api/pyplot_api.html
+        
+        """
         reshow = set()
         for name, layer_obj in self._layers.items():
             if name == layer:
@@ -94,22 +169,36 @@ class Fovea2D(Fovea, Axes):
             layer_obj.show()
 
     def delete_layer(self, layer):
+        """
+        Deletes the Layer object
+        associated with `layer`.
+        """
         del self._layers[layer]
 
     def build_layer(self, layer=None, **kwargs):
+        """
+        Build and render a single axes layer.
+        This method must be called after applying certain
+        changes to a layer object such as setting the style.
+
+        The most importang kwarg is `plot` which specifies
+        the pyplot function used to plot the layer data.
+        Possible options include `scatter` and `contour`.
+        Plot defaults to the built-in plotting function.
+        """
         if not layer:
             layer = self._active_layer
         else:
             layer = self._layers[layer]
         if not 'plot' in kwargs:
             plot = self.plot
-            try:
-                for (x, y) in zip(layer.x_data, layer.y_data):
-                    layer.plots.append(
-                                       plot(x, y, layer.style, **kwargs)
-                                      )
-            except:
-                pass
+        try:
+            for (x, y) in zip(layer.x_data, layer.y_data):
+                layer.plots.append(
+                                   plot(x, y, layer.style, **kwargs)
+                                  )
+        except:
+            pass
         if layer.lines:
             for line in layer.lines:
                 self.add_line(line)
@@ -122,6 +211,12 @@ class Fovea2D(Fovea, Axes):
             self.build_layer(layer)
 
 class Fovea3D(Fovea2D, Axes3D):
+    """
+    A class providing layer functionality for Matplotlib's
+    3D axes. Supports most of the same methods as Fovea2D,
+    although certain Layer attributes such as `add_hline`,
+    `add_vline`, and `add_line` are not supported.
+    """
     name = 'Fovea3D'
 
     def __init__(self, *args, **kwargs):
@@ -131,6 +226,16 @@ class Fovea3D(Fovea2D, Axes3D):
         self._tracker = None
 
     def build_layer(self, layer, plot=None, **kwargs):
+        """
+        Build and render a single axes layer.
+        This method must be called after applying certain
+        changes to a layer object such as setting the style.
+
+        The most importang kwarg is `plot` which specifies
+        the pyplot function used to plot the layer data.
+        Possible options include `scatter` and `contour`.
+        Plot defaults to the built-in plotting function.
+        """
         if not layer:
             layer = self._active_layer
         else:
@@ -150,5 +255,6 @@ class Fovea3D(Fovea2D, Axes3D):
         if not layer.visible:
             layer.hide()
 
+# Registers the Fovea2D and Fovea3D classes as valid projections.
 projection_registry.register(Fovea2D)
 projection_registry.register(Fovea3D)
