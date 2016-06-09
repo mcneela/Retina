@@ -105,9 +105,9 @@ class Fovea2D(Fovea, Axes):
             plot = self.plot
             try:
                 for (x, y) in zip(layer.x_data, layer.y_data):
-                    layer.plots.append(plot(x, y,
-                                            layer.style,
-                                            **kwargs))
+                    layer.plots.append(
+                                       plot(x, y, layer.style, **kwargs)
+                                      )
             except:
                 pass
         if layer.lines:
@@ -138,8 +138,10 @@ class Fovea3D(Fovea2D, Axes3D):
         if not plot:
             plot = self.plot
         try:
-            layer.plot = plot(layer.x_data, layer.y_data, layer.z_data,
-                              layer.style, **kwargs)
+            for x, y, z in zip(layer.x_data, layer.y_data, layer.z_data):
+                layer.plots.append(
+                                   plot(x, y, z, layer.style, **kwargs)
+                                  )
         except:
             pass
         if layer.lines:
