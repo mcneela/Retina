@@ -94,6 +94,12 @@ class Layer:
         self._set_visibility(False)
         self.visible = False
 
+    def toggle_display(self):
+        if self.visible:
+            self.hide()
+        else:
+            self.show()
+
     def add_line(self, *args, **kwargs):
         """
         Add a Matplotlib Line2D object to the layer.
