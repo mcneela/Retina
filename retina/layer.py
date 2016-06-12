@@ -1,5 +1,8 @@
 import matplotlib
 from matplotlib.lines import Line2D
+from matplotlib.axes import Axes
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.artist import *
 import matplotlib.pyplot as plt
 
 class Layer:
@@ -44,6 +47,12 @@ class Layer:
                 setattr(self, attr, self.default_attrs[attr])
 
     def _try_method(self, val, method_name, *args, **kwargs):
+        try:
+            method_name(val, *args, **kwargs)
+        except:
+            pass
+
+    def _attr_try_method(self, val, method_name, *args, **kwargs):
         """
         Private method which attempts to call the method
         `method_name` from the potential object `val`.
@@ -62,23 +71,26 @@ class Layer:
         """
         return hasattr(value, "__iter__") and not isinstance(value, str) 
 
-    def _method_loop(self, method_name, iterable, *args, **kwargs):
+    def _method_loop(self, attr, method_name, iterable, *args, **kwargs):
         """
         Recursivley attempts to apply the method having `method_name`
         to every item in the potential sequence `iterable`.
         """
         for val in list(iterable):
             if self._is_iterable(val):
-                self._method_loop(method_name, val, *args, **kwargs)
+                self._method_loop(attr, method_name, val, *args, **kwargs)
             else:
-                self._try_method(val, method_name, *args, **kwargs)
+                if attr:
+                    self._attr_try_method(val, method_name, *args, **kwargs)
+                else:
+                    self._try_method(val, method_name, *args, **kwargs)
 
     def _set_visibility(self, boolean):
         """
         Set the visibility of a Matplotlib artist. Accepts either True
         or False.
         """
-        self._method_loop("set_visible", self.__dict__.values(), boolean)
+        self._method_loop(True, "set_visible", self.__dict__.values(), boolean)
 
     def show(self):
         """
@@ -135,6 +147,20 @@ class Layer:
         Apply a style to all Matplotlib artists in the layer.
         """
         self.style = style
+
+    def _set_linewidth(self, artist, linewidth):
+       if linewidth:
+           setp(artist, 'linewidth')
+       else:
+           current_lw = getp(artist, 'linewidth')
+           setp(artist, 'linewidth', 2 * current_lw)
+
+    def bold(self, linewidth=None):
+        """
+        Sets linewidth of layer artists to either the value of `linewidth`
+        or the default of twice the artist's current linewidth.
+        """
+        self._method_loop(False, self._set_linewidth, self.__dict__.values(),  linewidth)
 
     def add_data(self, *args):
         """
