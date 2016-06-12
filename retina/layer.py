@@ -148,12 +148,19 @@ class Layer:
         """
         self.style = style
 
+    def set_prop(self, *args, **kwargs):
+        """
+        Sets property(ies) passed as *args and 
+        **kwargs for each artist in the layer.
+        """
+        self._method_loop(False, setp, self.__dict__.values(), *args, **kwargs)
+
     def _set_linewidth(self, artist, linewidth):
-       if linewidth:
-           setp(artist, 'linewidth')
-       else:
-           current_lw = getp(artist, 'linewidth')
-           setp(artist, 'linewidth', 2 * current_lw)
+        if linewidth:
+            setp(artist, 'linewidth')
+        else:
+            current_lw = getp(artist, 'linewidth')
+            setp(artist, 'linewidth', 2 * current_lw)
 
     def bold(self, linewidth=None):
         """
