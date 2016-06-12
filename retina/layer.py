@@ -1,8 +1,10 @@
 import matplotlib
+import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.artist import *
+from matplotlib.patches import *
 import matplotlib.pyplot as plt
 
 class Layer:
@@ -37,7 +39,8 @@ class Layer:
                              'x_data': [],
                              'y_data': [],
                              'z_data': [],
-                             'plots': [] 
+                             'plots': [], 
+                             'patches': []
                              }
         self.name = name
         for attr in kwargs:
@@ -177,13 +180,53 @@ class Layer:
         Second argument should be a list, tuple or array of y data.
         Optional third argument should be a list, tuple, or array of z data.
         """
-        self.x_data.append(args[0])
-        self.y_data.append(args[1])
+        self.x_data.append(np.array(args[0]))
+        self.y_data.append(np.array(args[1]))
         try:
-            self.z_data.append(args[2])
+            self.z_data.append(np.array(args[2]))
         except:
             pass
 
+    def bound(self, shape=Rectangle, **kwargs):
+        """
+        Draws a boundary having specified `shape` around the data 
+        contained in the layer. Shape should be a valid Matplotlib
+        patch class.
+
+        **kwargs should be Patch instantiation arguments.
+        """
+        
+        try:
+            x_min, x_max = np.amin(self.x_data[0]), np.amax(self.x_data[0])
+            y_min, y_max = np.amin(self.y_data[0]), np.amax(self.y_data[0])
+        except:
+            print("Bound cannot be calculated because data has not yet "
+                  "been added to the plot.")
+            return
+
+        for x, y in zip(self.x_data, self.y_data):
+            x_lmax, x_lmin = np.amax(x), np.amin(x)
+            y_lmax, y_lmin = np.amax(y), np.amin(y)
+            if x_lmin < x_min:
+                x_min = x_lmin
+            if x_lmax > x_max:
+                x_max = x_lmax
+            if y_lmin < y_min:
+                y_min = y_lmin
+            if y_lmax > y_max:
+                y_max = y_lmax
+            
+        x_mid, y_mid = (x_min + x_max)/2, (y_min + y_max)/2
+        center = (x_mid, y_mid)
+        if shape is Circle:
+            radius = np.sqrt((y_max - y_mid) ** 2 +  (x_max - x_mid) ** 2)
+            self.patches.append(shape(center, radius, fill=False, **kwargs))
+        if shape is Rectangle:
+            lower_left = (x_min, y_min)
+            width = x_max - x_min
+            height = y_max - y_min
+            self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
+        
     def add_attrs(self, **kwargs):
         """
         Add a custom attribute to the layer.
