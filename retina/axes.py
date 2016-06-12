@@ -137,6 +137,7 @@ class Fovea2D(Fovea, Axes):
             layer_obj = Layer(layer, **kwargs)
             self._layers[layer] = layer_obj
             setattr(self, layer, layer_obj)
+            return layer_obj
 
     def get_layer(self, layer):
         """
@@ -167,6 +168,18 @@ class Fovea2D(Fovea, Axes):
         plt.savefig(*args, **kwargs)
         for layer_obj in reshow:
             layer_obj.show()
+
+    def showcase(self, layer):
+        """
+        Sets `layer` to visible and hides all other
+        axes layers.
+        """
+        show_layer = self._layers[layer]
+        for layer_obj in self._layers.values():
+            if layer_obj is show_layer:
+                layer_obj.show()
+            else:
+                layer_obj.hide()
 
     def delete_layer(self, layer):
         """

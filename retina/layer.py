@@ -76,7 +76,7 @@ class Layer:
 
     def _method_loop(self, attr, method_name, iterable, *args, **kwargs):
         """
-        Recursivley attempts to apply the method having `method_name`
+        Recursively attempts to apply the method having `method_name`
         to every item in the potential sequence `iterable`.
         """
         for val in list(iterable):
@@ -158,19 +158,29 @@ class Layer:
         """
         self._method_loop(False, setp, self.__dict__.values(), *args, **kwargs)
 
-    def _set_linewidth(self, artist, linewidth):
+    def _set_linewidth(self, artist, linewidth=None, bold=True):
         if linewidth:
             setp(artist, 'linewidth')
         else:
             current_lw = getp(artist, 'linewidth')
-            setp(artist, 'linewidth', 2 * current_lw)
+            if bold:
+                setp(artist, 'linewidth', 2 * current_lw)
+            else:
+                lw = max(current_lw / 2, 1)
+                setp(artist, 'linewidth', lw)
 
     def bold(self, linewidth=None):
         """
         Sets linewidth of layer artists to either the value of `linewidth`
         or the default of twice the artist's current linewidth.
         """
-        self._method_loop(False, self._set_linewidth, self.__dict__.values(),  linewidth)
+        self._method_loop(False, self._set_linewidth, self.__dict__.values(), linewidth)
+
+    def unbold(self):
+        """
+        Reverts boldfacing of Matplotlib artists caused by calls to Layer.bold()
+        """
+        self._method_loop(False, self._set_linewidth, self.__dict__.values(), bold=False)
 
     def add_data(self, *args):
         """
@@ -216,9 +226,9 @@ class Layer:
             if y_lmax > y_max:
                 y_max = y_lmax
             
-        x_mid, y_mid = (x_min + x_max)/2, (y_min + y_max)/2
-        center = (x_mid, y_mid)
         if shape is Circle:
+            x_mid, y_mid = (x_min + x_max)/2, (y_min + y_max)/2
+            center = (x_mid, y_mid)
             radius = np.sqrt((y_max - y_mid) ** 2 +  (x_max - x_mid) ** 2)
             self.patches.append(shape(center, radius, fill=False, **kwargs))
         if shape is Rectangle:
