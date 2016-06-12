@@ -204,6 +204,9 @@ class Fovea2D(Fovea, Axes):
                 self.add_line(line)
         if not layer.visible:
             layer.hide()
+        if layer.patches:
+            for patch in layer.patches:
+                self.add_patch(patch)
 
     def build_layers(self):
         self.cla()
@@ -252,6 +255,9 @@ class Fovea3D(Fovea2D, Axes3D):
         if layer.lines:
             for line in layer.lines:
                 self.add_line(line)
+        if layer.patches:
+            for patch in layer.patches:
+                self.add_patch(patch)
         if not layer.visible:
             layer.hide()
 
