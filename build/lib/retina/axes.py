@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.projections import projection_registry
 import matplotlib.pyplot as plt
-from layer import *
+from retina.layer import *
 
 class Fovea(metaclass=ABCMeta):
     """
