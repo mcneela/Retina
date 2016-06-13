@@ -47,8 +47,8 @@ class HopfieldNetwork:
         The wrapper method for the network's various training algorithms stored in
         self._trainers.
 
-        patterns        A list of the on which to train the network. Patterns are
-                        bipolar vectors of the form 
+        patterns        A list of the patterns on which to train the network. Patterns 
+                        are bipolar vectors of the form 
 
                         [random.choice([-1, 1]) for i in range(self.num_neurons)].
 
@@ -67,7 +67,7 @@ class HopfieldNetwork:
         except KeyError:
             print(method + " is not a valid training method.")
 
-    def learn(self, patterns, steps=None, mode="asynchronous", inject = lambda x: None):
+    def learn(self, patterns, steps=None, mode="asynchronous", inject = lambda x, y: None):
         """
         Wrapper method for self._synchronous and self._asynchronous.
 
