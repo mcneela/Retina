@@ -1,4 +1,4 @@
-from axes import *
+from retina.core.axes import *
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
