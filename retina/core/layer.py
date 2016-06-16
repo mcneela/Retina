@@ -7,7 +7,7 @@ from matplotlib.artist import *
 from matplotlib.patches import *
 import matplotlib.pyplot as plt
 
-class Layer:
+class Layer2D:
     """
     Class defining a Layer object. This class
     should only be used in conjunction with a
@@ -24,7 +24,7 @@ class Layer:
         """
         cls.default_style = style
     
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, axes, **kwargs):
         """
         Initializes the Layer class.
         New attributes should be given default
@@ -32,17 +32,17 @@ class Layer:
         """
         self.default_attrs = {
                              'visible': True,
-                             'style': Layer.default_style,
+                             'style': Layer2D.default_style,
                              'lines': [],
                              'hlines': [], 
                              'vlines': [], 
                              'x_data': [],
                              'y_data': [],
-                             'z_data': [],
                              'plots': [], 
                              'patches': []
                              }
         self.name = name
+        self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
         for attr in self.default_attrs: 
@@ -192,10 +192,6 @@ class Layer:
         """
         self.x_data.append(np.array(args[0]))
         self.y_data.append(np.array(args[1]))
-        try:
-            self.z_data.append(np.array(args[2]))
-        except:
-            pass
 
     def bound(self, shape=Rectangle, **kwargs):
         """
@@ -252,3 +248,60 @@ class Layer:
         for key in self.__dict__.keys():
             self.__dict__[key] = None
         self.__dict__.update(self.default_attrs)
+
+class Layer3D(Layer2D):
+    def __init__(self, name, axes, **kwargs):
+        """
+        Initializes the Layer class.
+        New attributes should be given default
+        values in self.default_attrs.
+        """
+        self.default_attrs = {
+                             'visible': True,
+                             'style': Layer3D.default_style,
+                             'lines': [],
+                             'hlines': [], 
+                             'vlines': [], 
+                             'x_data': [],
+                             'y_data': [],
+                             'z_data': [],
+                             'plots': [],
+                             'planes': [],
+                             'patches': []
+                             }
+        self.name = name
+        self.axes = axes
+        for attr in kwargs:
+            setattr(self, attr, kwargs[attr])
+        for attr in self.default_attrs: 
+            if not hasattr(self, attr):
+                setattr(self, attr, self.default_attrs[attr])
+
+    def add_data(self, *args):
+        """
+        Add data to the layer.
+
+        First argument should be a list, tuple, or array of x data.
+        Second argument should be a list, tuple or array of y data.
+        Optional third argument should be a list, tuple, or array of z data.
+        """
+        self.x_data.append(np.array(args[0]))
+        self.y_data.append(np.array(args[1]))
+        self.z_data.append(np.array(args[2]))
+
+    def add_plane(self, point, normal):
+        """
+        normal -- Normal vector (a, b, c) to the plane
+        point -- point (x, y, z) on the plane 
+
+        Adds a plane having the equation ax + by + cz = d.
+        """
+        point = np.array(point)
+        [a, b, c] = np.array(normal)
+
+        d = point.dot(normal)
+        
+        (x_min, x_max), (y_min, y_max) = self.axes.get_xlim(), self.axes.get_ylim()
+        x, y = np.meshgrid(np.arange(x_min, x_max), np.arange(y_min, y_max))
+        z = (d - a * x - b * y) * 1. / c
+        self.planes.append([x, y, z])

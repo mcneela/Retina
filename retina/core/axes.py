@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.projections import projection_registry
 import matplotlib.pyplot as plt
-from retina.core.layer import Layer 
+from retina.core.layer import Layer2D, Layer3D
 
 class Fovea(metaclass=ABCMeta):
     """
@@ -134,7 +134,7 @@ class Fovea2D(Fovea, Axes):
             # If layer does not exist, a new layer
             # object is instantiated and tracked
             # by the axes' layers dictionary.
-            layer_obj = Layer(layer, **kwargs)
+            layer_obj = Layer2D(layer, self, **kwargs)
             self._layers[layer] = layer_obj
             setattr(self, layer, layer_obj)
             return layer_obj
@@ -241,6 +241,26 @@ class Fovea3D(Fovea2D, Axes3D):
         self._active_layer = None
         self._tracker = None
 
+    def add_layer(self, layer, **kwargs):
+        """
+        Method to add a layer to the axes.
+
+        **kwargs are passed to Layer constructor.
+        """
+        try:
+            # Check to see if layer already exists.
+            self._layers[layer]
+            print("Layer already exists.")
+            return
+        except:
+            # If layer does not exist, a new layer
+            # object is instantiated and tracked
+            # by the axes' layers dictionary.
+            layer_obj = Layer3D(layer, self, **kwargs)
+            self._layers[layer] = layer_obj
+            setattr(self, layer, layer_obj)
+            return layer_obj
+
     def build_layer(self, layer, plot=None, **kwargs):
         """
         Build and render a single axes layer.
@@ -271,6 +291,9 @@ class Fovea3D(Fovea2D, Axes3D):
         if layer.patches:
             for patch in layer.patches:
                 self.add_patch(patch)
+        if layer.planes:
+            for plane in layer.planes:
+                self.plot_surface(plane[0], plane[1], plane[2], **kwargs)
         if not layer.visible:
             layer.hide()
 
