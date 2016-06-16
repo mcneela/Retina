@@ -14,3 +14,5 @@ def section(data, num_sections, axis='x'):
         print(axis + " is not a valid axis.")
     sections = get_sections(data[data[:, ax].argsort()], num_sections)
     return sections
+
+def 

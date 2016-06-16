@@ -206,7 +206,7 @@ class VisualHopfield(HopfieldNetwork):
                     neuron.draw_connection(neuron_two, connection_color, self.main_network)
             self.main_network.autoscale(tight=False)
 
-    def _plot_energy(self, num_samples=1, path_length=20):
+    def _plot_energy(self, num_samples=4, path_length=20):
         """
         Plots the energy function of the network.
 
