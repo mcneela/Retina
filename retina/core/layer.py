@@ -233,6 +233,8 @@ class Layer2D:
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
+
+        self.axes.build_layers()
         
     def add_attrs(self, **kwargs):
         """
