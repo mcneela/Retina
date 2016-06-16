@@ -1,4 +1,4 @@
-from retina.axes import *
+from retina.core.axes import *
 import matplotlib.pyplot as plt
 import numpy as np
 
