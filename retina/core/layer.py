@@ -31,24 +31,24 @@ class Layer2D:
         New attributes should be given default
         values in self.default_attrs.
         """
-        self.default_attrs = {
-                             'visible': True,
-                             'style': Layer2D.default_style,
-                             'lines': [],
-                             'hlines': [], 
-                             'vlines': [], 
-                             'x_data': [],
-                             'y_data': [],
-                             'plots': [], 
-                             'patches': []
-                             }
+        default_attrs = {
+                         'visible': True,
+                         'style': Layer2D.default_style,
+                         'lines': [],
+                         'hlines': [], 
+                         'vlines': [], 
+                         'x_data': [],
+                         'y_data': [],
+                         'plots': [], 
+                         'patches': []
+                         }
         self.name = name
         self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
-        for attr in self.default_attrs: 
+        for attr in default_attrs: 
             if not hasattr(self, attr):
-                setattr(self, attr, self.default_attrs[attr])
+                setattr(self, attr, default_attrs[attr])
 
     def _try_method(self, val, method_name, *args, **kwargs):
         try:
