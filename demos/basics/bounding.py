@@ -1,5 +1,6 @@
 import retina.core.axes as rca
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
 import numpy as np
 
 fig = plt.figure(figsize=(20, 20))
@@ -38,3 +39,9 @@ subplot.build_layers()
 # watch a bounding box be drawn for both of the layers.
 # sin_like.bound()
 # logs.bound()
+
+# Run the following commands in iPython or the interpreter to
+# watch a bounding circle be drawn for both of the layers.
+# sin_like.bound(shape=Circle)
+# logs.bound(shape=Circle)
+
