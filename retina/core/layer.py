@@ -6,6 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.artist import *
 from matplotlib.patches import *
 import matplotlib.pyplot as plt
+import time
 
 class Layer2D:
     """
@@ -60,7 +61,7 @@ class Layer2D:
         Private method which attempts to call the method
         `method_name` from the potential object `val`.
         """
-        if hasattr(val, method_name):
+        if not isinstance(val, Axes) and hasattr(val, method_name):
             try:
                 method = getattr(val, method_name)
                 method(*args, **kwargs)
