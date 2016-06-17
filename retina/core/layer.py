@@ -320,3 +320,38 @@ class Layer3D(Layer2D):
             unsort.append(var_list[ind])
         self.planes.append(unsort)
         self.axes.build_layer(self.name, **kwargs)
+
+    def bound(self, shape='cube', color='b', **kwargs):
+        try:
+            x_min, x_max = np.amin(self.x_data[0]), np.amax(self.x_data[0])
+            y_min, y_max = np.amin(self.y_data[0]), np.amax(self.y_data[0])
+            z_min, z_max = np.amin(self.z_data[0]), np.amax(self.z_data[0])
+        except:
+            print("Bound cannot be calculated because data has not yet "
+                  "been added to the plot.")
+            return
+
+        for x, y, z in zip(self.x_data, self.y_data, self.z_data):
+            x_lmax, x_lmin = np.amax(x), np.amin(x)
+            y_lmax, y_lmin = np.amax(y), np.amin(y)
+            z_lmax, z_lmin = np.amax(z), np.amin(z)
+            if x_lmin < x_min:
+                x_min = x_lmin
+            if x_lmax > x_max:
+                x_max = x_lmax
+            if y_lmin < y_min:
+                y_min = y_lmin
+            if y_lmax > y_max:
+                y_max = y_lmax
+            if z_lmin < z_min:
+                z_min = z_lmin
+            if z_lmax > z_max:
+                z_max = z_lmax
+        
+        if shape == 'cube':
+            x, y, z = [x_min, x_max], [y_min, y_max], [z_min, z_max]
+            from itertools import product, combinations
+            for s, e in combinations(np.array(list(product(x, y, z))), 2):
+                corner = np.sum(np.abs(s - e))
+                if corner == (x_max - x_min) or corner == (y_max - y_min) or corner == (z_max - z_min):
+                    self.plots.append(self.axes.plot(*zip(s, e), color=color, **kwargs))
