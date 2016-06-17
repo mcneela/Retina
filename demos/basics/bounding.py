@@ -1,4 +1,9 @@
-import retina.core.axes as rca
+"""
+A demonstration of Retina's ability to
+create a bounding shape around the data
+plotted in a layer.
+"""
+import retina.core.axes
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import numpy as np
@@ -44,4 +49,3 @@ subplot.build_layers()
 # watch a bounding circle be drawn for both of the layers.
 # sin_like.bound(shape=Circle)
 # logs.bound(shape=Circle)
-
