@@ -26,6 +26,7 @@ sin_like = subplot.add_layer('sin_like')
 sin_like.add_data(x, y)
 # Set the style for the layer
 sin_like.set_style('r-')
+
 #######################
 # Set up second layer #
 #######################
