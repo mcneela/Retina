@@ -293,7 +293,9 @@ class Fovea3D(Fovea2D, Axes3D):
                 self.add_patch(patch)
         if layer.planes:
             for plane in layer.planes:
-                self.plot_surface(plane[0], plane[1], plane[2], **kwargs)
+                layer.plots.append(
+                    self.plot_surface(plane[0], plane[1], plane[2], **kwargs)
+                )
         if not layer.visible:
             layer.hide()
 

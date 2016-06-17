@@ -30,24 +30,24 @@ class Layer2D:
         New attributes should be given default
         values in self.default_attrs.
         """
-        self.default_attrs = {
-                             'visible': True,
-                             'style': Layer2D.default_style,
-                             'lines': [],
-                             'hlines': [], 
-                             'vlines': [], 
-                             'x_data': [],
-                             'y_data': [],
-                             'plots': [], 
-                             'patches': []
-                             }
+        default_attrs = {
+                         'visible': True,
+                         'style': Layer2D.default_style,
+                         'lines': [],
+                         'hlines': [], 
+                         'vlines': [], 
+                         'x_data': [],
+                         'y_data': [],
+                         'plots': [], 
+                         'patches': []
+                         }
         self.name = name
         self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
-        for attr in self.default_attrs: 
+        for attr in default_attrs: 
             if not hasattr(self, attr):
-                setattr(self, attr, self.default_attrs[attr])
+                setattr(self, attr, default_attrs[attr])
 
     def _try_method(self, val, method_name, *args, **kwargs):
         try:
@@ -60,7 +60,7 @@ class Layer2D:
         Private method which attempts to call the method
         `method_name` from the potential object `val`.
         """
-        if hasattr(val, method_name):
+        if not isinstance(val, Axes) and hasattr(val, method_name):
             try:
                 method = getattr(val, method_name)
                 method(*args, **kwargs)
@@ -232,7 +232,8 @@ class Layer2D:
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
-        
+
+        self.axes.build_layers()
     def add_attrs(self, **kwargs):
         """
         Add a custom attribute to the layer.
@@ -289,7 +290,7 @@ class Layer3D(Layer2D):
         self.y_data.append(np.array(args[1]))
         self.z_data.append(np.array(args[2]))
 
-    def add_plane(self, point, normal):
+    def add_plane(self, point, normal, **kwargs):
         """
         normal -- Normal vector (a, b, c) to the plane
         point -- point (x, y, z) on the plane 
@@ -297,11 +298,60 @@ class Layer3D(Layer2D):
         Adds a plane having the equation ax + by + cz = d.
         """
         point = np.array(point)
-        [a, b, c] = np.array(normal)
-
+        normal = np.array(normal)
+        lims = [self.axes.get_xlim, self.axes.get_ylim, self.axes.get_zlim]
+        indices = np.argsort(normal)
+        
+        point = point[indices]
+        normal = normal[indices]
+        lim_list = []
+        for sort in indices:
+            lim_list.append(lims[sort])
+        [l, r, u] = lim_list
         d = point.dot(normal)
         
-        (x_min, x_max), (y_min, y_max) = self.axes.get_xlim(), self.axes.get_ylim()
-        x, y = np.meshgrid(np.arange(x_min, x_max), np.arange(y_min, y_max))
-        z = (d - a * x - b * y) * 1. / c
-        self.planes.append([x, y, z])
+        (l_min, l_max), (r_min, r_max) = l(), r() 
+        l, r = np.meshgrid(np.linspace(l_min, l_max), np.linspace(r_min, r_max))
+        u = (d - normal[0] * l - normal[1] * r) * 1. / normal[2] 
+        var_list = [l, r, u]
+        diff_ind = np.argsort(indices)
+        unsort = []
+        for ind in diff_ind:
+            unsort.append(var_list[ind])
+        self.planes.append(unsort)
+        self.axes.build_layer(self.name, **kwargs)
+
+    def bound(self, shape='cube', color='b', **kwargs):
+        try:
+            x_min, x_max = np.amin(self.x_data[0]), np.amax(self.x_data[0])
+            y_min, y_max = np.amin(self.y_data[0]), np.amax(self.y_data[0])
+            z_min, z_max = np.amin(self.z_data[0]), np.amax(self.z_data[0])
+        except:
+            print("Bound cannot be calculated because data has not yet "
+                  "been added to the plot.")
+            return
+
+        for x, y, z in zip(self.x_data, self.y_data, self.z_data):
+            x_lmax, x_lmin = np.amax(x), np.amin(x)
+            y_lmax, y_lmin = np.amax(y), np.amin(y)
+            z_lmax, z_lmin = np.amax(z), np.amin(z)
+            if x_lmin < x_min:
+                x_min = x_lmin
+            if x_lmax > x_max:
+                x_max = x_lmax
+            if y_lmin < y_min:
+                y_min = y_lmin
+            if y_lmax > y_max:
+                y_max = y_lmax
+            if z_lmin < z_min:
+                z_min = z_lmin
+            if z_lmax > z_max:
+                z_max = z_lmax
+        
+        if shape == 'cube':
+            x, y, z = [x_min, x_max], [y_min, y_max], [z_min, z_max]
+            from itertools import product, combinations
+            for s, e in combinations(np.array(list(product(x, y, z))), 2):
+                corner = np.sum(np.abs(s - e))
+                if corner == (x_max - x_min) or corner == (y_max - y_min) or corner == (z_max - z_min):
+                    self.plots.append(self.axes.plot(*zip(s, e), color=color, **kwargs))
