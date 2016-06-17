@@ -6,7 +6,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.artist import *
 from matplotlib.patches import *
 import matplotlib.pyplot as plt
-import time
 
 class Layer2D:
     """
@@ -31,24 +30,24 @@ class Layer2D:
         New attributes should be given default
         values in self.default_attrs.
         """
-        default_attrs = {
-                         'visible': True,
-                         'style': Layer2D.default_style,
-                         'lines': [],
-                         'hlines': [], 
-                         'vlines': [], 
-                         'x_data': [],
-                         'y_data': [],
-                         'plots': [], 
-                         'patches': []
-                         }
+        self.default_attrs = {
+                             'visible': True,
+                             'style': Layer2D.default_style,
+                             'lines': [],
+                             'hlines': [], 
+                             'vlines': [], 
+                             'x_data': [],
+                             'y_data': [],
+                             'plots': [], 
+                             'patches': []
+                             }
         self.name = name
         self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
-        for attr in default_attrs: 
+        for attr in self.default_attrs: 
             if not hasattr(self, attr):
-                setattr(self, attr, default_attrs[attr])
+                setattr(self, attr, self.default_attrs[attr])
 
     def _try_method(self, val, method_name, *args, **kwargs):
         try:
@@ -61,7 +60,7 @@ class Layer2D:
         Private method which attempts to call the method
         `method_name` from the potential object `val`.
         """
-        if not isinstance(val, Axes) and hasattr(val, method_name):
+        if hasattr(val, method_name):
             try:
                 method = getattr(val, method_name)
                 method(*args, **kwargs)
@@ -233,8 +232,6 @@ class Layer2D:
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
-
-        self.axes.build_layers()
         
     def add_attrs(self, **kwargs):
         """
@@ -292,7 +289,7 @@ class Layer3D(Layer2D):
         self.y_data.append(np.array(args[1]))
         self.z_data.append(np.array(args[2]))
 
-    def add_plane(self, point, normal):
+    def add_plane(self, point, normal, **kwargs):
         """
         normal -- Normal vector (a, b, c) to the plane
         point -- point (x, y, z) on the plane 
@@ -321,4 +318,4 @@ class Layer3D(Layer2D):
         for ind in diff_ind:
             unsort.append(var_list[ind])
         self.planes.append(unsort)
-        self.axes.build_layer(self.name)
+        self.axes.build_layer(self.name, **kwargs)
