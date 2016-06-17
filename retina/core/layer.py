@@ -311,7 +311,7 @@ class Layer3D(Layer2D):
         d = point.dot(normal)
         
         (l_min, l_max), (r_min, r_max) = l(), r() 
-        l, r = np.meshgrid(np.arange(l_min, l_max), np.arange(r_min, r_max))
+        l, r = np.meshgrid(np.linspace(l_min, l_max), np.linspace(r_min, r_max))
         u = (d - normal[0] * l - normal[1] * r) * 1. / normal[2] 
         var_list = [l, r, u]
         diff_ind = np.argsort(indices)
