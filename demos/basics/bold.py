@@ -59,5 +59,3 @@ plt.pause(2)
 # since layer has reached default linewidth.
 sinc.unbold()
 print("This unbold operation has no effect.")
-
-
