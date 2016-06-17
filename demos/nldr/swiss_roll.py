@@ -12,8 +12,8 @@ with locally linear embedding
 
 print(__doc__)
 
-import matplotlib.pyplot as plt
 from mapping import *
+import matplotlib.pyplot as plt
 
 # This import is needed to modify the way figure behaves
 from mpl_toolkits.mplot3d import Axes3D
