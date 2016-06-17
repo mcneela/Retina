@@ -30,24 +30,24 @@ class Layer2D:
         New attributes should be given default
         values in self.default_attrs.
         """
-        self.default_attrs = {
-                             'visible': True,
-                             'style': Layer2D.default_style,
-                             'lines': [],
-                             'hlines': [], 
-                             'vlines': [], 
-                             'x_data': [],
-                             'y_data': [],
-                             'plots': [], 
-                             'patches': []
-                             }
+        default_attrs = {
+                         'visible': True,
+                         'style': Layer2D.default_style,
+                         'lines': [],
+                         'hlines': [], 
+                         'vlines': [], 
+                         'x_data': [],
+                         'y_data': [],
+                         'plots': [], 
+                         'patches': []
+                         }
         self.name = name
         self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
-        for attr in self.default_attrs: 
+        for attr in default_attrs: 
             if not hasattr(self, attr):
-                setattr(self, attr, self.default_attrs[attr])
+                setattr(self, attr, default_attrs[attr])
 
     def _try_method(self, val, method_name, *args, **kwargs):
         try:
@@ -60,7 +60,7 @@ class Layer2D:
         Private method which attempts to call the method
         `method_name` from the potential object `val`.
         """
-        if hasattr(val, method_name):
+        if not isinstance(val, Axes) and hasattr(val, method_name):
             try:
                 method = getattr(val, method_name)
                 method(*args, **kwargs)
@@ -232,7 +232,8 @@ class Layer2D:
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
-        
+
+        self.axes.build_layers()
     def add_attrs(self, **kwargs):
         """
         Add a custom attribute to the layer.
