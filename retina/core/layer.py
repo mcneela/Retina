@@ -297,11 +297,25 @@ class Layer3D(Layer2D):
         Adds a plane having the equation ax + by + cz = d.
         """
         point = np.array(point)
-        [a, b, c] = np.array(normal)
-
+        normal = np.array(normal)
+        lims = [self.axes.get_xlim, self.axes.get_ylim, self.axes.get_zlim]
+        indices = np.argsort(normal)
+        
+        point = point[indices]
+        normal = normal[indices]
+        lim_list = []
+        for sort in indices:
+            lim_list.append(lims[sort])
+        [l, r, u] = lim_list
         d = point.dot(normal)
         
-        (x_min, x_max), (y_min, y_max) = self.axes.get_xlim(), self.axes.get_ylim()
-        x, y = np.meshgrid(np.arange(x_min, x_max), np.arange(y_min, y_max))
-        z = (d - a * x - b * y) * 1. / c
-        self.planes.append([x, y, z])
+        (l_min, l_max), (r_min, r_max) = l(), r() 
+        l, r = np.meshgrid(np.arange(l_min, l_max), np.arange(r_min, r_max))
+        u = (d - normal[0] * l - normal[1] * r) * 1. / normal[2] 
+        var_list = [l, r, u]
+        diff_ind = np.argsort(indices)
+        unsort = []
+        for ind in diff_ind:
+            unsort.append(var_list[ind])
+        self.planes.append(unsort)
+        self.axes.build_layer(self.name)
