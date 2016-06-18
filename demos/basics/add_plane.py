@@ -1,4 +1,6 @@
 """
+Copyright 2016, Daniel McNeela.
+
 Demo of the add_plane() feature of the Fovea3D class.
 """
 import matplotlib.pyplot as plt
