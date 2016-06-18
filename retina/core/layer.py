@@ -39,7 +39,8 @@ class Layer2D:
                          'x_data': [],
                          'y_data': [],
                          'plots': [], 
-                         'patches': []
+                         'patches': [],
+                         'bounds': []
                          }
         self.name = name
         self.axes = axes
@@ -201,7 +202,8 @@ class Layer2D:
 
         **kwargs should be Patch instantiation arguments.
         """
-        
+        if self.bounds:
+            self._method_loop(True, "set_visible", self.bounds, True)
         try:
             x_min, x_max = np.amin(self.x_data[0]), np.amax(self.x_data[0])
             y_min, y_max = np.amin(self.y_data[0]), np.amax(self.y_data[0])
@@ -227,13 +229,19 @@ class Layer2D:
             center = (x_mid, y_mid)
             radius = np.sqrt((y_max - y_mid) ** 2 +  (x_max - x_mid) ** 2)
             self.patches.append(shape(center, radius, fill=False, **kwargs))
+            self.bounds.append(self.patches[-1])
         if shape is Rectangle:
             lower_left = (x_min, y_min)
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
+            self.bounds.append(self.patches[-1])
 
         self.axes.build_layers()
+
+    def unbound(self):
+        self._method_loop(True, "set_visible", self.bounds, False)
+
     def add_attrs(self, **kwargs):
         """
         Add a custom attribute to the layer.
@@ -268,7 +276,8 @@ class Layer3D(Layer2D):
                              'z_data': [],
                              'plots': [],
                              'planes': [],
-                             'patches': []
+                             'patches': [],
+                             'bounds': []
                              }
         self.name = name
         self.axes = axes
@@ -322,6 +331,9 @@ class Layer3D(Layer2D):
         self.axes.build_layer(self.name, **kwargs)
 
     def bound(self, shape='cube', color='b', **kwargs):
+        if self.bounds:
+            self._method_loop(True, "set_visible", self.bounds, True)
+            return
         try:
             x_min, x_max = np.amin(self.x_data[0]), np.amax(self.x_data[0])
             y_min, y_max = np.amin(self.y_data[0]), np.amax(self.y_data[0])
@@ -348,6 +360,7 @@ class Layer3D(Layer2D):
             if z_lmax > z_max:
                 z_max = z_lmax
         
+        self.bounds = []
         if shape == 'cube':
             x, y, z = [x_min, x_max], [y_min, y_max], [z_min, z_max]
             from itertools import product, combinations
@@ -355,3 +368,7 @@ class Layer3D(Layer2D):
                 corner = np.sum(np.abs(s - e))
                 if corner == (x_max - x_min) or corner == (y_max - y_min) or corner == (z_max - z_min):
                     self.plots.append(self.axes.plot(*zip(s, e), color=color, **kwargs))
+                    self.bounds.append(self.plots[-1])
+        
+    def unbound(self):
+        self._method_loop(True, "set_visible", self.bounds, False)
