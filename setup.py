@@ -25,7 +25,7 @@ setup(
     author_email='daniel.mcneela@gmail.com',
 
     # Choose your license
-    license='',
+    license='Copyright 2016, Daniel McNeela. All rights reserved.',
 
     classifiers=[
         'Development Status :: 3 - Alpha',
