@@ -6,7 +6,6 @@ of randomly generated data.
 
 import pca_disc
 from pca_disc import *
-from axes import *
 
 from PyDSTool.Toolbox import synthetic_data as sd
 
