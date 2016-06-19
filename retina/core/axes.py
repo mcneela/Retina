@@ -2,7 +2,6 @@ from abc import ABCMeta, abstractmethod
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.projections import projection_registry
 import matplotlib.pyplot as plt
 from retina.core.layer import Layer2D, Layer3D
 
@@ -298,7 +297,3 @@ class Fovea3D(Fovea2D, Axes3D):
                 )
         if not layer.visible:
             layer.hide()
-
-# Registers the Fovea2D and Fovea3D classes as valid projections.
-projection_registry.register(Fovea2D)
-projection_registry.register(Fovea3D)
