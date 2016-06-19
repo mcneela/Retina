@@ -1,11 +1,12 @@
+import matplotlib.pyplot as plt
 from abc import ABCMeta, abstractmethod
+from future.utils import with_metaclass
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
 from retina.core.layer import Layer2D, Layer3D
 
-class Fovea(metaclass=ABCMeta):
+class Fovea(with_metaclass(ABCMeta, object)):
     """
     Abstract base class specifying standard layer methods
     that all Fovea subclasses should implement.
