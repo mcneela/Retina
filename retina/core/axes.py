@@ -5,6 +5,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from retina.core.layer import Layer2D, Layer3D
+from retina.core.py2 import *
 
 class Fovea(with_metaclass(ABCMeta, object)):
     """
@@ -146,6 +147,7 @@ class Fovea2D(Fovea, Axes):
         """
         return self._layers[layer]
 
+    @py2plot
     def save_layer(self, layer, *args, **kwargs):
         """
         Saves a snapshot of the artists in 'layer'
@@ -169,6 +171,7 @@ class Fovea2D(Fovea, Axes):
         for layer_obj in reshow:
             layer_obj.show()
 
+    @py2plot
     def showcase(self, layer):
         """
         Sets `layer` to visible and hides all other
@@ -188,6 +191,7 @@ class Fovea2D(Fovea, Axes):
         """
         del self._layers[layer]
 
+    @py2plot
     def build_layer(self, layer=None, **kwargs):
         """
         Build and render a single axes layer.
@@ -261,6 +265,7 @@ class Fovea3D(Fovea2D, Axes3D):
             setattr(self, layer, layer_obj)
             return layer_obj
 
+    @py2plot
     def build_layer(self, layer, plot=None, **kwargs):
         """
         Build and render a single axes layer.
