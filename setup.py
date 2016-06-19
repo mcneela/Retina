@@ -50,7 +50,7 @@ setup(
         'Operating System :: POSIX :: Linux'
     ],
 
-    keywords='scientific visualization, machine learning, matplotlib, dynamical systems, research, teaching'
+    keywords='scientific visualization, machine learning, matplotlib, dynamical systems, research, teaching',
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
@@ -65,4 +65,4 @@ setup(
     # have to be included in MANIFEST.in as well.
     package_data={
         
-    },
+    })
