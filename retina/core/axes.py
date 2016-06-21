@@ -209,10 +209,13 @@ class Fovea2D(Fovea, Axes):
             layer = self._layers[layer]
         if not 'plot' in kwargs:
             plot = self.plot
+        else:
+            plot = kwargs['plot']
+            del kwargs['plot']
         try:
             for (x, y) in zip(layer.x_data, layer.y_data):
                 layer.plots.append(
-                                   plot(x, y, layer.style, **kwargs)
+                                   plot(x, y, **kwargs)
                                   )
         except:
             pass
