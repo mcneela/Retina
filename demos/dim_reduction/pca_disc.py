@@ -11,8 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from PyDSTool import *
-from axes import *
-from layer import *
+import retina.core.axes
 import random
 
 def translate(X, axis, amount):

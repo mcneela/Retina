@@ -1,11 +1,12 @@
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.artist import *
 from matplotlib.patches import *
-import matplotlib.pyplot as plt
+from retina.core.py2 import *
 
 class Layer2D:
     """
@@ -96,6 +97,7 @@ class Layer2D:
         """
         self._method_loop(True, "set_visible", self.__dict__.values(), boolean)
 
+    @py2plot
     def show(self):
         """
         Display a layer in the axes window.
@@ -103,6 +105,7 @@ class Layer2D:
         self._set_visibility(True)
         self.visible = True
 
+    @py2plot
     def hide(self):
         """
         Hide a layer in the axes window.
@@ -110,6 +113,7 @@ class Layer2D:
         self._set_visibility(False)
         self.visible = False
 
+    @py2plot
     def toggle_display(self):
         if self.visible:
             self.hide()
@@ -122,6 +126,7 @@ class Layer2D:
         """
         self.lines.append(Line2D(*args, **kwargs))
 
+    @py2plot
     def add_vline(self, x):
         """
         Add a vertical line specified by the equation
@@ -134,6 +139,7 @@ class Layer2D:
         except:
             print("Vertical lines are not supported by this Axes type.")
 
+    @py2plot
     def add_hline(self, y):
         """
         Add a horizontal line specified by the equation
@@ -194,6 +200,7 @@ class Layer2D:
         self.x_data.append(np.array(args[0]))
         self.y_data.append(np.array(args[1]))
 
+    @py2plot
     def bound(self, shape=Rectangle, **kwargs):
         """
         Draws a boundary having specified `shape` around the data 
@@ -235,10 +242,10 @@ class Layer2D:
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
+            self.axes.add_patch(self.patches[-1])
             self.bounds.append(self.patches[-1])
 
-        self.axes.build_layers()
-
+    @py2plot
     def unbound(self):
         self._method_loop(True, "set_visible", self.bounds, False)
 
@@ -330,6 +337,7 @@ class Layer3D(Layer2D):
         self.planes.append(unsort)
         self.axes.build_layer(self.name, **kwargs)
 
+    @py2plot
     def bound(self, shape='cube', color='b', **kwargs):
         if self.bounds:
             self._method_loop(True, "set_visible", self.bounds, True)
@@ -370,5 +378,6 @@ class Layer3D(Layer2D):
                     self.plots.append(self.axes.plot(*zip(s, e), color=color, **kwargs))
                     self.bounds.append(self.plots[-1])
         
+    @py2plot
     def unbound(self):
         self._method_loop(True, "set_visible", self.bounds, False)

@@ -2,8 +2,8 @@
 A demo of the Layer2D.bold()/Layer3D.bold() function.
 """
 import matplotlib.pyplot as plt
-import numpy as np
 import retina.core.axes
+import numpy as np
 import time
 
 plt.ion()

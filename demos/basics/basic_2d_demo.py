@@ -3,7 +3,7 @@ A basic demonstration of setting up a Matplotlib
 plot using the Fovea2D axes class and adding
 layers to said plot.
 """
-from retina.core.axes import *
+import retina.core.axes
 import matplotlib.pyplot as plt
 import numpy as np
 
