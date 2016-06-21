@@ -59,4 +59,31 @@ the error (`err`) induced by the LLE algorithm. For the purposes of our demonstr
 make use of the error variable, but it can be useful in evaluating the success of the LLE algorithm
 when applied to your data.
 
+## Setting up Fovea's Matplotlib Axes
 
+Now that we have access to both our source and target datasets, we can begin to set up Fovea for
+visualization. Fovea makes use of its own 2D and 3D axes which derive from Matplotlib's own 2D
+and 3D axes, respectively. The beauty of this is that you can use all of Matplotlib's standard
+syntax and features for constructing the bare bones setup of your visualization and then tap
+into Fovea's additional capabilities in order to enhance the interactivity of that sparse construction.
+As such, we will import Matplotlib's pyplot module, giving it the alias of `plt` as is common practice.
+
+    `import matplotlib.pyplot as plt`
+
+We also need to import Fovea's 2D and 3D axes classes. These are located in the `retina.core.axes` module
+and we import them like so:
+
+    `import retina.core.axes`
+
+Now that the requisite modules have been imported, the first thing that we'll need to do is create a Matplotlib
+figure to hold our axes:
+
+    fig = plt.figure(figsize=(20, 20))
+
+For this demonstration we will be sectioning the Swiss Roll into five constituent parts and plotting their 2D
+projections individually. Thus we will need one 3D axes to hold the original 3D dataset, and five 2D axes to
+display each section's projection for a total of six axes altogether. We can use Matplotlib's `GridSpec` utility
+to arrange these axes in a 2 x 3 tabular fashion as follows:
+
+    from matplotlib import gridspec
+    gs = gridspec.GridSpec(2, 3) 
