@@ -43,4 +43,12 @@ def converge_segment(data, num_iterations, axis=0):
     array.
     """
     sorted_data = data[data[:, axis].argsort()]
-
+    seg_size = data.shape[0] / num_iterations
+    increment = seg_size / 2
+    segs = []
+    for i in range(num_iterations):
+        lower_seg = sorted_data[0:(i + 1) * increment, :]
+        upper_seg = sorted_data[-(i + 1) * increment, :]
+        seg = np.concatenate(lower_seg, upper_seg)
+        segs.append(seg)
+    return segs
