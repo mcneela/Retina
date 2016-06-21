@@ -25,9 +25,9 @@ dcolor = len(color)/len(segs)
 for i in range(len(segs)):
     seg = segs[i]
     roll_seg = roll_segs[i]
-    proj_layer = proj.add_layer('segment ' + str(i))
+    proj_layer = proj.add_layer('segment ' + str(int(i)))
     proj_layer.add_data(seg[:, 0], seg[:, 1])
-    roll_layer = roll.add_layer('segment ' + str(i))
+    roll_layer = roll.add_layer('segment ' + str(int(i)))
     roll_layer.add_data(roll_seg[:,0], roll_seg[:,1], roll_seg[:,2])
     new_colors = color.copy()
     new_colors = new_colors[0:(i+1)*dcolor]
@@ -39,7 +39,7 @@ roll.showcase('segment 9')
 slid = Slider(segselector, 'Segment Selector', 0, 9, valinit=0, valfmt='%0.0f')
 def update(val):
     seg_num = math.floor(slid.val)
-    proj.showcase('segment ' + str(seg_num))
-    roll.showcase('segment ' + str(seg_num))
+    proj.showcase('segment ' + str(int(seg_num)))
+    roll.showcase('segment ' + str(int(seg_num)))
 
 slid.on_changed(update)
