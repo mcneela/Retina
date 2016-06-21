@@ -25,3 +25,38 @@ a rainbow-like Matplotlib colormap applied.
 ![Swiss Roll 3D](swiss_roll.png "Swiss Roll")  
 
 ## Performing the Reduction
+
+The first step in creating our visualization involves generating the Swiss Roll data
+and applying the Locally Linear Embedding transformation to that data. To do this,
+we will import scikit-learn into our project. The modules relevant to the task at hand
+are `manifold` and `datasets`:
+
+    from sklearn import manifold, datasets
+
+Next, we will conjure the Swiss Roll data
+
+    X, color = datasets.samples_generator.make_swiss_roll(n_samples=1500)
+
+In the datasets module, `sample_generator` is a class that provides a number of utility
+functions for generating interesting sets of data. The class' `make_swiss_roll` function does
+exactly as expected: generates a 3D swiss roll dataset. The function returns two items.
+The first, `X`, is an n x 3 array of points residing in the dataset, where `n = n_samples`. The second
+is a 1 x n array of the relative positions of each row in `X`. It is this sort of relational
+data that we need in order to apply a Matplotlib colormap to the roll, so we call it `color`. 
+
+Now that we have our data, we can apply the LLE transformation to it. Since our source data
+makes use of three dimensions, we will make our target topological space have dimension two.
+The reduction can be performed painlessly by a single call to scikit-learns `manifold.locally_linear_embedding`
+like so:
+
+    X_r, err = manifold.locally_linear_embedding(X, n_neighbors=12,
+                                                 n_components=2)
+
+The arguments to the LLE function are `X`: the dataset to be reduced, `n_neighbors`: the number
+of neighboring points that the algorithm should use in performing its reduction, and `n_components`:
+the dimension of the target topological space. The function returns the reduced dataset (`X_r`) and
+the error (`err`) induced by the LLE algorithm. For the purposes of our demonstration, we will not
+make use of the error variable, but it can be useful in evaluating the success of the LLE algorithm
+when applied to your data.
+
+
