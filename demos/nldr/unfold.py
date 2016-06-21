@@ -1,7 +1,7 @@
-import mapping
 import matplotlib.pyplot as plt
 import matplotlib
 import retina.core.axes
+import retina.nldr as nldr 
 import numpy as np
 import math
 from matplotlib import gridspec
@@ -13,8 +13,9 @@ X, color = datasets.samples_generator.make_swiss_roll(n_samples=1500)
 X_r, err = manifold.locally_linear_embedding(X, n_neighbors=12,
                                              n_components=2)
 
-segs = mapping.progressive_segment(X_r, 10, axis=1)
-roll_segs = mapping.progressive_segment(X, 10, axis=2)
+segs = nldr.mapping.progressive_segment(X_r, 10, axis=1)
+roll_segs = nldr.mapping.progressive_segment(X, 10, axis=2)
+color = color[color.argsort()]
 
 fig = plt.figure(figsize=(20, 20))
 roll = fig.add_subplot(211, projection='Fovea3D')

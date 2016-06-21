@@ -2,9 +2,9 @@
 Adapted from the swiss_roll.py example
 packaged with Scikit-Learn.
 """
-import mapping
 import matplotlib.pyplot as plt
 import retina.core.axes
+import retina.nldr as nldr
 import numpy as np
 from matplotlib import gridspec
 from sklearn import manifold, datasets
@@ -50,8 +50,10 @@ gs = gridspec.GridSpec(2, 3)
 nld = plt.subplot(gs[0,0], projection='Fovea3D')
 
 num_sections = 5
-sections = mapping.section(X, num_sections, axis='z')
-colors = mapping.section(X, num_sections, axis='y')
+sections = nldr.mapping.ordered_section(X, num_sections, axis=0)
+color = color[color.argsort()]
+colors = [color[i*len(color)/5.0:(i+1)*len(color)/5.0] for i in range(5)]
+
 for i, j, sec, clr in zip([0, 0, 1, 1, 1], range(num_sections), sections, colors):
     swiss_sec = nld.add_layer('section ' + str(j))
     ax = plt.subplot(gs[i, (j + 1) % 3], projection='Fovea2D')
@@ -59,10 +61,10 @@ for i, j, sec, clr in zip([0, 0, 1, 1, 1], range(num_sections), sections, colors
                                                  n_components=2)
     dcolor = len(color) / 5.0
     swiss_sec.add_data(sec[:, 0], sec[:, 1], sec[:, 2])
-    nld.build_layer(swiss_sec.name, c=color[j*dcolor:(j+1)*dcolor], plot=nld.scatter, vmin=dat_min, vmax=dat_max, cmap=plt.cm.Spectral)
+    nld.build_layer(swiss_sec.name, c=color[j*dcolor:(j+1)*dcolor], plot=nld.scatter, cmap=plt.cm.Spectral)
     proj = ax.add_layer('section ' + str(j) + ' proj')
     proj.add_data(X_r[:, 0], X_r[:, 1])
-    ax.build_layer(proj.name, plot=ax.scatter, c=color[j*dcolor:(j+1)*dcolor], vmin=dat_min, vmax=dat_max, cmap=plt.cm.Spectral)
+    ax.build_layer(proj.name, plot=ax.scatter, c=color[j*dcolor:(j+1)*dcolor], cmap=plt.cm.Spectral)
     ax.set_title('section ' + str(j))
 
 handler = EventSystem(fig)
