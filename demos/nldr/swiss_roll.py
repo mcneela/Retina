@@ -43,8 +43,6 @@ X, color = datasets.samples_generator.make_swiss_roll(n_samples=1500)
 X_r, err = manifold.locally_linear_embedding(X, n_neighbors=12,
                                              n_components=2)
 
-dat_min = np.amin(X[:,1])
-dat_max = np.amax(X[:,1])
 fig = plt.figure(figsize=(20, 20))
 gs = gridspec.GridSpec(2, 3)
 nld = plt.subplot(gs[0,0], projection='Fovea3D')
