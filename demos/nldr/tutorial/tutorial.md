@@ -200,4 +200,4 @@ We also set the title of each axes using Matplotlib's built-in `set_title` funct
 
 Voila! If at this point you run the script, you will get a figure window that should look something like this...
 
-![Static Visualization X-Axis](imgs/Static_Visual_X.png, "Static Visualization")
+![Static Visualization X-Axis](imgs/Static_Visual_X.png "Static Visualization")
