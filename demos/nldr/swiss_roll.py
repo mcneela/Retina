@@ -25,7 +25,15 @@ class EventSystem(object):
             return
         if sec is not self.hover_sec and self.hover_sec:
             self.hover_sec.unbound()
+        sec.set_prop('alpha', 1)
         sec.bound()
+        for ax in self.fig.get_axes():
+            try:
+                nonhover_sec = nld.get_layer(ax.title._text)
+                if nonhover_sec is not sec:
+                    nonhover_sec.set_prop('alpha', 0.2)
+            except:
+                pass
         self.hover_sec = sec
 
     def mouse_click(self, event):
