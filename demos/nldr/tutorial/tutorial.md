@@ -201,3 +201,66 @@ We also set the title of each axes using Matplotlib's built-in `set_title` funct
 Voila! If at this point you run the script, you will get a figure window that should look something like this...
 
 ![Static Visualization X-Axis](imgs/Static_Visual_X.png "Static Visualization")
+
+Here we have a static visualization of each section of our data and its 2D projection, the sort of thing you could generate as a typical Matplotlib
+application. However, there's no easy way to visualize our sections here, at least not without giving each its own individual axes, and even if we
+could visualize these sections, there'd be no reliable way to identify them with their 2D plots. What's more, this visualization isn't interactive
+and that really hinders us from attaining the sort of intuition that we'd like to be able to gain from these plots. This is where Fovea comes to
+the rescue! With just a few simple key bindings that call on the core functionality of the Fovea axes, we can setup an intuitive, interactive visualization
+that will tell us more than we ever wanted to know about dimensionality reduction and the LLE algorithm.
+
+## Introducing Interactivity
+
+To introduce interactivity, we are going to create a simple `EventSystem` class that will take in a Matplotlib figure instance upon instantiation
+and bind mouse movement and click events to this figure's canvas. Here is the first part of the class definition.
+
+	class EventSystem:
+		def __init__(self, fig):
+			self.fig = fig
+			self.hover_sec = None
+			self.click_sec = None
+			self.fig.canvas.mpl_connect('motion_notify_event', self.mouse_over)
+			self.fig.canvas.mpl_connect('button_press_event', self.mouse_click)
+
+As you can see, we define variables to hold the figure, the axes of the 2D section over which the mouse is currently hovering, and the axes of the
+2D section which was last clicked. Furthermore, we bind two as-of-yet undefined functions to the figure's canvas. These will be called when the
+axes are moved over by the mouse pointer and are clicked on.
+
+Finally, we need only define these two event-handling functions. The first, `mouse_over` is simple. All it does is keep track of the axes that
+the mouse is currently hovering over by accessing the `event.inaxes` attribute. It then attempts to get the Fovea layer corresponding to the title text
+ of this axes which, conveniently enough, is the layer's name. If the corresponding layer object is successfully acquired **and** if it differs
+from the axes over which the mouse last hovered (stored in `self.hover_sec`), the handler responds by calling Fovea's `Layer3D.bound()` method and
+updating the `self.hover_sec` attribute. All the bound method does is draw a 3D box around the data stored in that layer, allowing the user to visually
+identify that data's position and distribution.
+
+The `mouse_click` handler works in exactly the same way, except that instead of calling `Layer3D.bound()` it calls on the `Fovea3D.showcase()` method.
+This method takes in the name of an axes layer and displays that layer while hiding the plots in all others. This is very useful for, as the name suggests,
+showcasing some particular potion of your plotted data.
+
+## Finishing Up
+
+If you run the visualization now, you should get a fully interactive application. Hovering over a section's 2D subplot should generate a visual that looks
+something like this:
+
+![Bounded Section](imgs/bound.png "Bounded Section")
+
+You can see that the current section being examined, in this case section one, is bounded within the 3D swiss roll plot. If you click on a section's 2D
+subplot, you should get something that looks like this
+
+![Showcased Section](imgs/showcase.png "Showcased Section")
+
+Here we have clicked on the 2D subplot corresponding to section two. As such, the section of swiss roll data to which the LLE algorithm was applied in
+order to generate this projection is showcased within the 3D axes. Given this view, the action of the algorithm on the data is no longer enigmatic. Each
+slanted line of the projection can be identified with the data of the corresponding color in the 3D, showcased section. Here there is indeed a nearly
+one-to-one relationship between input data and output projection.
+
+Now, if we rerun the visualization while changing the axis along which the swiss roll is sectioned, we can gain even more insight.
+
+![y-axis slicing](imgs/y-axis.png "Y-Axis Slicing")
+
+Here we are taking slices perpendicular to the y-axis, and it shows dramatically in the output of the LLE algorithm. I have rotated the 3D subplot so
+that you can get an idea of the plane onto which the sections are being projected. Here the sections are just 3D swirls, and their topology is being
+preserved beautifully by the LLE algorithm.
+
+I hope this tutorial has shed some light on both non-linear dimensionality reduction and the ways in which Fovea can facilitate visualization either
+in your learning or your research.
