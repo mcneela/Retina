@@ -8,7 +8,7 @@ from matplotlib.artist import *
 from matplotlib.patches import *
 from retina.core.py2 import *
 
-class Layer2D:
+class Layer2D(object):
     """
     Class defining a Layer object. This class
     should only be used in conjunction with a

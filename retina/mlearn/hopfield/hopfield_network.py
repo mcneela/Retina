@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-class HopfieldNetwork:
+class HopfieldNetwork(object):
     """
     (C) Daniel McNeela, 2016
 

@@ -10,7 +10,7 @@ from scipy.interpolate import griddata as gd
 
 neuron_radius = 1
 
-class VisualNeuron:
+class VisualNeuron(object):
     """
     Class creates a visual representation of a neuron in a generic Hopfield Network.
 

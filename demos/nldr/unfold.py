@@ -38,6 +38,7 @@ proj.showcase('segment 9')
 roll.showcase('segment 9')
 
 slid = Slider(segselector, 'Segment Selector', 0, 9, valinit=0, valfmt='%0.0f')
+
 def update(val):
     seg_num = math.floor(slid.val)
     proj.showcase('segment ' + str(int(seg_num)))

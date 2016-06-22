@@ -148,7 +148,7 @@ def setupDisplay(clus_layers, clus_styles, DOI):
 
 proj_thresh = 20
 
-class ControlSys:
+class ControlSys(object):
     def __init__(self, fig, data, clus_layers, clus_styles, d, before, after, variance, proj_vecsLO=None, proj_vecsHI=None):
         self.fig = fig
         self.before = before

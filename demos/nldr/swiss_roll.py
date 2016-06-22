@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import gridspec
 from sklearn import manifold, datasets
 
-class EventSystem:
+class EventSystem(object):
     def __init__(self, fig):
         self.fig = fig
         self.hover_sec = None
