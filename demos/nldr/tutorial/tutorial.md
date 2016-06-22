@@ -22,7 +22,7 @@ is commonly used in evaluating the performance of nldr algorithms as it exhibits
 a high degree of structured non-linearity. Pictured here is the dataset with
 a rainbow-like Matplotlib colormap applied.
 
-![Swiss Roll 3D](swiss_roll.png "Swiss Roll")  
+![Swiss Roll 3D](imgs/swiss_roll.png "Swiss Roll")  
 
 ## Performing the Reduction
 
@@ -87,3 +87,117 @@ to arrange these axes in a 2 x 3 tabular fashion as follows:
 
     from matplotlib import gridspec
     gs = gridspec.GridSpec(2, 3) 
+
+Now are figure has effectively been split into a 2 x 3 arrangement of space to which we can attach an Axes instance
+at each grid coordinate. We'll put our original 3D data in the top-left corner using the following command:
+
+    nld = plt.subplot(gs[0, 0], projection='Fovea3D')
+
+Note here that we get the first grid space by indexing with `[0,0]` the gs object, and we specify that we want to
+override Matplotlib's default axes and use the Fovea3D axes instead by passing our axes type as the `projection`
+keyword argument.
+
+## Sectioning our Data Using Fovea's NLDR Utility Functions
+
+Fovea provides a suite of functions and classes for generating, tweaking, and coordinating visualizations of data
+transformed by non-linear dimensionality reduction algorithms. For this example, we're going to delve more deeply
+into those resources provided in the module `retina.core.mapping`. The function we will use is called `ordered_section`,
+and it allows you to partition your data along some axis (either x, y, z, or a higher dimensional one). This is useful
+for generating a visualization in which your data is parceled in sections of even size, either from left to right,
+bottom to top, or, in the case of the z-axis, back to front. This is exactly what we'll be doing here, as it will
+allow us to more adequately understand the behavior of the LLE algorithm based on which axis our data is sectioned
+along. To create the ordered sections, we simply need to call the aforementioned function like so
+
+	num_sections = 5
+	sections = nldr.mapping.ordered_section(X, num_sections, axis=0)
+
+The `ordered_section` function returns a list of numpy arrays containing the sections of data. In this case, we specify that
+we want to section along the x-axis (axis 0), although alternatively we could have used the y or z axes as well (`axis=1`,
+`axis=2`, respectively). Since we are segmenting our data into five parts, sections will be a list of length five.
+
+Now, because we have segmented our data, we must do the same for our colors array in order to be able to faithfully apply
+the proper Matplotlib color map to each section of data individually. Our color array is one-dimensional, so we will need
+to permute the ordering of the color values in the same way as the rows of our data matrix were permuted by the `ordered_section`
+function. If you examine the source of `ordered_section`, you can see that the main sorting work of the function is done in the 
+following line:
+
+   data[:, axis].argsort()
+
+where `data` is the input data array. The numpy function `argsort` just returns the ordering of indices required to sort the
+data array. Thus, in order to achieve the same permutation of our colors list, we can index it like so:
+
+    colors = color[X[:, 0].argsort()]
+
+Finally, we need to segment our color array into five individual segments that will map to each section of our segmented swiss
+roll data.
+
+	colors = [color[i*len(color)/num_sections:(i+1)*len(color)/num_sections] for i in range(num_sections)]
+
+Now that we have our original data and color map segmented, we can proceed with the primary legwork of preparing our data for
+visualization: applying the LLE algorithm to each section individually, and plotting each section in its own 2D axes.
+
+## Generating 2D Projections and Creating Layers
+
+We will now use a simple, iterative loop to generate the 2D Fovea axes for our visualization. This is where Fovea's functionality
+will really begin to shine as it will allow us to group our plots in layers, making for the seamless viewing of individual sections
+and their projections later on down the line.
+
+Our loop will need to keep track of four different items. The row of our figure window to which we are seeking to add each section's
+individual 2D projection axes, the number of the section with which we are working, the section data arrays themselves, and the individual
+color segments. Since we already have our 3D subplot setup at index (0, 0) of the gridspec, we can enumerate the row numbers for each
+of the remaining subplot axes as `[0, 0, 1, 1, 1]`. We can get the current section number by using Python's `range(num_sections)` construct,
+and therefore the main control statement for our loop will be:
+
+    for i, j, sec, clr in zip([0, 0, 1, 1, 1], range(num_sections), sections, colors):
+
+Now we can dissect the content of the loop line by line.
+
+At each step we use Fovea's `add_layer` function to add a new layer to our 3D data subplot. Remember, we have the subplot axes saved in the
+variable `nld`, so we simply write:
+
+    swiss_sec = nld.add_layer('section ' + str(j))
+
+It's important to note here that the `add_layer` function returns a layer object that can be manipulated autonomously by way of a number of
+class methods, more details about which can be found in the `retina.core.layer` module.
+
+Now that we have our layer object, we need to add some data to it. The `add_layer` function accepts `x_data` as the first argument, `y_data`
+as the second argument, and, in the case of 3D axes, `z_data` as the third argument. We can extract these components from our section of the
+swiss roll data and add them to the layer structure like so:
+
+	swiss_sec.add_data(sec[:, 0], sec[:, 1], sec[:, 2])
+
+Finally, we need to build the layer. This is the process in which Fovea plots all the layer's data and internally generates the Matplotlib
+artists to be interactively manipulated. The function takes in the string name of the layer to be built, as well as an optional `plot` argument
+which specifies the plotting function to be used. If one is not provided, the default `pyplot` plotting function is used. In this case we
+are going to want to generate a scatter plot of our data, so we use the `scatter` function that is bundled as part of Matplotlib's 3D axes.
+The other kwargs are standard Matplotlib plotting arguments that are passed to the scatter function.
+
+    nld.build_layer(swiss_sec.name, plot=nld.scatter, c=clr, cmap=plt.cm.Spectral)
+
+Now that we have our 3D plot setup, we turn to our 2D subplots and generate a Fovea2D axes to hold each section's projected, two-dimensional data.
+We index it within the gridspec as `(i, (j + 1) % 3)` as we would like to mod out the section number (plus 1) by the number of columns in the gridspec
+ position array.
+
+    ax = plt.subplot(gs[i, (j + 1) % 3], projection='Fovea2D')
+
+Now, we fall back on scikit-learn to generate the LLE projection of the section. Note here that since we are applying the LLE algorithm individually,
+each projection will be taken without the context of the other sections of the roll. Thus we are not, in fact, projecting the manifold in its
+entirety, as there is no way to deduce a one-to-one mapping between source points and their projections. This is one of the inherent limitations
+of the way in which the LLE algorithm is implemented, but it actually serves our visualization purposes in that we can infer more concretely
+the structural makeup of each section and how that structure is translated into a 2D projection without worrying about interference from the noise
+of those sections surrounding it. All of this is done with:
+
+    X_r, err = manifold.locally_linear_embedding(sec, n_neighbors=50,
+                                                 n_components=2)
+
+In an identical fashion to the procedure for setting up the 3D axes, we add the projected data to a new layer within each 2D axes and build the layer.
+We also set the title of each axes using Matplotlib's built-in `set_title` function:
+
+    proj = ax.add_layer('section ' + str(j) + ' proj')
+    proj.add_data(X_r[:, 0], X_r[:, 1])
+    ax.build_layer(proj.name, plot=ax.scatter, c=clr, cmap=plt.cm.Spectral)
+    ax.set_title('section ' + str(j))
+
+Voila! If at this point you run the script, you will get a figure window that should look something like this...
+
+![Static Visualization X-Axis](imgs/Static_Visual_X.png, "Static Visualization")
