@@ -17,9 +17,9 @@ of tools.
 ## The Dataset
 
 For this example, we will perform dimensionality reduction on the Swiss Roll
-dataset, aptly named given its resemblance to the Swiss Roll cake. This data
-is commonly used in evaluating the performance of nldr algorithms as it exhibits
-a high degree of structured non-linearity. Pictured here is the dataset with
+dataset, aptly named given its resemblance to the Swiss Roll cake of great culinary repute.
+This object is commonly used in evaluating the performance of nldr algorithms as it exhibits
+a high degree of structured non-linearity. Pictured here is the roll with
 a rainbow-like Matplotlib colormap applied.
 
 ![Swiss Roll 3D](imgs/swiss_roll.png "Swiss Roll")  
@@ -33,20 +33,20 @@ are `manifold` and `datasets`:
 
     from sklearn import manifold, datasets
 
-Next, we will conjure the Swiss Roll data
+Next, we will conjure the Swiss Roll
 
     X, color = datasets.samples_generator.make_swiss_roll(n_samples=1500)
 
 In the datasets module, `sample_generator` is a class that provides a number of utility
-functions for generating interesting sets of data. The class' `make_swiss_roll` function does
+functions for generating interesting data. The class' `make_swiss_roll` function does
 exactly as expected: generates a 3D swiss roll dataset. The function returns two items.
-The first, `X`, is an n x 3 array of points residing in the dataset, where `n = n_samples`. The second
+The first, `X`, is an n x 3 array of the points residing in the dataset, where `n = n_samples`. The second
 is a 1 x n array of the relative positions of each row in `X`. It is this sort of relational
 data that we need in order to apply a Matplotlib colormap to the roll, so we call it `color`. 
 
 Now that we have our data, we can apply the LLE transformation to it. Since our source data
 makes use of three dimensions, we will make our target topological space have dimension two.
-The reduction can be performed painlessly by a single call to scikit-learns `manifold.locally_linear_embedding`
+The reduction can be performed painlessly by a single call to scikit-learn's `manifold.locally_linear_embedding`
 like so:
 
     X_r, err = manifold.locally_linear_embedding(X, n_neighbors=12,
@@ -62,8 +62,8 @@ when applied to your data.
 ## Setting up Fovea's Matplotlib Axes
 
 Now that we have access to both our source and target datasets, we can begin to set up Fovea for
-visualization. Fovea makes use of its own 2D and 3D axes which derive from Matplotlib's own 2D
-and 3D axes, respectively. The beauty of this is that you can use all of Matplotlib's standard
+visualization. Fovea makes use of its own 2D and 3D axes which derive from Matplotlib's default axes.
+The beauty of this is that you can use all of Matplotlib's standard
 syntax and features for constructing the bare bones setup of your visualization and then tap
 into Fovea's additional capabilities in order to enhance the interactivity of that sparse construction.
 As such, we will import Matplotlib's pyplot module, giving it the alias of `plt` as is common practice.
@@ -88,12 +88,12 @@ to arrange these axes in a 2 x 3 tabular fashion as follows:
     from matplotlib import gridspec
     gs = gridspec.GridSpec(2, 3) 
 
-Now are figure has effectively been split into a 2 x 3 arrangement of space to which we can attach an Axes instance
+Now our figure has effectively been split into a 2 x 3 arrangement of space to which we can attach an Axes instance
 at each grid coordinate. We'll put our original 3D data in the top-left corner using the following command:
 
     nld = plt.subplot(gs[0, 0], projection='Fovea3D')
 
-Note here that we get the first grid space by indexing with `[0,0]` the gs object, and we specify that we want to
+Note here that we get the first grid space by indexing the gs object with `[0,0]`, and we specify that we want to
 override Matplotlib's default axes and use the Fovea3D axes instead by passing our axes type as the `projection`
 keyword argument.
 
@@ -112,19 +112,19 @@ along. To create the ordered sections, we simply need to call the aforementioned
 	sections = nldr.mapping.ordered_section(X, num_sections, axis=0)
 
 The `ordered_section` function returns a list of numpy arrays containing the sections of data. In this case, we specify that
-we want to section along the x-axis (axis 0), although alternatively we could have used the y or z axes as well (`axis=1`,
+we want to section along the x-axis (`axis=0`), although alternatively we could have used the y or z axes as well (`axis=1`,
 `axis=2`, respectively). Since we are segmenting our data into five parts, sections will be a list of length five.
 
-Now, because we have segmented our data, we must do the same for our colors array in order to be able to faithfully apply
+Now, because we have segmented our data, we must do the same for our color array in order to be able to faithfully apply
 the proper Matplotlib color map to each section of data individually. Our color array is one-dimensional, so we will need
 to permute the ordering of the color values in the same way as the rows of our data matrix were permuted by the `ordered_section`
-function. If you examine the source of `ordered_section`, you can see that the main sorting work of the function is done in the 
+function. If you examine the source of `ordered_section`, you can see that the main sorting work is done in the 
 following line:
 
-   data[:, axis].argsort()
+    data[:, axis].argsort()
 
 where `data` is the input data array. The numpy function `argsort` just returns the ordering of indices required to sort the
-data array. Thus, in order to achieve the same permutation of our colors list, we can index it like so:
+array, and thus, in order to achieve the correct permutation of our colors list, we can index it like so:
 
     colors = color[X[:, 0].argsort()]
 
@@ -144,7 +144,7 @@ and their projections later on down the line.
 
 Our loop will need to keep track of four different items. The row of our figure window to which we are seeking to add each section's
 individual 2D projection axes, the number of the section with which we are working, the section data arrays themselves, and the individual
-color segments. Since we already have our 3D subplot setup at index (0, 0) of the gridspec, we can enumerate the row numbers for each
+color segments. Since we already have our 3D subplot setup at index `[0, 0]` of the gridspec, we can enumerate the row numbers for each
 of the remaining subplot axes as `[0, 0, 1, 1, 1]`. We can get the current section number by using Python's `range(num_sections)` construct,
 and therefore the main control statement for our loop will be:
 
@@ -152,7 +152,7 @@ and therefore the main control statement for our loop will be:
 
 Now we can dissect the content of the loop line by line.
 
-At each step we use Fovea's `add_layer` function to add a new layer to our 3D data subplot. Remember, we have the subplot axes saved in the
+At each step we use Fovea's `add_layer` function to add a new layer to our 3D swiss roll subplot. Remember, we have the subplot axes saved in the
 variable `nld`, so we simply write:
 
     swiss_sec = nld.add_layer('section ' + str(j))
@@ -167,8 +167,8 @@ swiss roll data and add them to the layer structure like so:
 	swiss_sec.add_data(sec[:, 0], sec[:, 1], sec[:, 2])
 
 Finally, we need to build the layer. This is the process in which Fovea plots all the layer's data and internally generates the Matplotlib
-artists to be interactively manipulated. The function takes in the string name of the layer to be built, as well as an optional `plot` argument
-which specifies the plotting function to be used. If one is not provided, the default `pyplot` plotting function is used. In this case we
+artists to be manipulated. The function takes in the string name of the layer to be built, as well as an optional `plot` argument
+which specifies the plotting function to be used. If one is not provided, the `pyplot` plotting function is chosen by default. In this case we
 are going to want to generate a scatter plot of our data, so we use the `scatter` function that is bundled as part of Matplotlib's 3D axes.
 The other kwargs are standard Matplotlib plotting arguments that are passed to the scatter function.
 
@@ -180,8 +180,8 @@ We index it within the gridspec as `(i, (j + 1) % 3)` as we would like to mod ou
 
     ax = plt.subplot(gs[i, (j + 1) % 3], projection='Fovea2D')
 
-Now, we fall back on scikit-learn to generate the LLE projection of the section. Note here that since we are applying the LLE algorithm individually,
-each projection will be taken without the context of the other sections of the roll. Thus we are not, in fact, projecting the manifold in its
+Now, we fall back on scikit-learn to generate the LLE projection of the section. Note here that since we are applying the LLE algorithm to each section
+ individually, each projection will be taken without the context of the other sections of the roll. Thus we are not, in fact, projecting the manifold in its
 entirety, as there is no way to deduce a one-to-one mapping between source points and their projections. This is one of the inherent limitations
 of the way in which the LLE algorithm is implemented, but it actually serves our visualization purposes in that we can infer more concretely
 the structural makeup of each section and how that structure is translated into a 2D projection without worrying about interference from the noise
@@ -204,7 +204,7 @@ Voila! If at this point you run the script, you will get a figure window that sh
 
 Here we have a static visualization of each section of our data and its 2D projection, the sort of thing you could generate as a typical Matplotlib
 application. However, there's no easy way to visualize our sections here, at least not without giving each its own individual axes, and even if we
-could visualize these sections, there'd be no reliable way to identify them with their 2D plots. What's more, this visualization isn't interactive
+could visualize these sections, there'd be no reliable way to identify them with their 2D counterparts. What's more, this visualization isn't interactive
 and that really hinders us from attaining the sort of intuition that we'd like to be able to gain from these plots. This is where Fovea comes to
 the rescue! With just a few simple key bindings that call on the core functionality of the Fovea axes, we can setup an intuitive, interactive visualization
 that will tell us more than we ever wanted to know about dimensionality reduction and the LLE algorithm.
@@ -226,7 +226,7 @@ As you can see, we define variables to hold the figure, the axes of the 2D secti
 2D section which was last clicked. Furthermore, we bind two as-of-yet undefined functions to the figure's canvas. These will be called when the
 axes are moved over by the mouse pointer and are clicked on.
 
-Finally, we need only define these two event-handling functions. The first, `mouse_over` is simple. All it does is keep track of the axes that
+Finally, we need only define these two event-handling functions. The first, `mouse_over`, is simple. All it does is keep track of the axes that
 the mouse is currently hovering over by accessing the `event.inaxes` attribute. It then attempts to get the Fovea layer corresponding to the title text
  of this axes which, conveniently enough, is the layer's name. If the corresponding layer object is successfully acquired **and** if it differs
 from the axes over which the mouse last hovered (stored in `self.hover_sec`), the handler responds by calling Fovea's `Layer3D.bound()` method and
@@ -235,7 +235,7 @@ identify that data's position and distribution.
 
 The `mouse_click` handler works in exactly the same way, except that instead of calling `Layer3D.bound()` it calls on the `Fovea3D.showcase()` method.
 This method takes in the name of an axes layer and displays that layer while hiding the plots in all others. This is very useful for, as the name suggests,
-showcasing some particular potion of your plotted data.
+showcasing some particular portion of your plotted data.
 
 ## Finishing Up
 
@@ -249,8 +249,8 @@ subplot, you should get something that looks like this
 
 ![Showcased Section](imgs/showcase.png "Showcased Section")
 
-Here we have clicked on the 2D subplot corresponding to section two. As such, the section of swiss roll data to which the LLE algorithm was applied in
-order to generate this projection is showcased within the 3D axes. Given this view, the action of the algorithm on the data is no longer enigmatic. Each
+Here we have clicked on the 2D subplot corresponding to section two. As such, the section of swiss roll data to which the LLE algorithm was applied is
+ showcased within the 3D axes. Given this view, the action of the algorithm on the data is no longer enigmatic. Each
 slanted line of the projection can be identified with the data of the corresponding color in the 3D, showcased section. Here there is indeed a nearly
 one-to-one relationship between input data and output projection.
 
@@ -262,5 +262,5 @@ Here we are taking slices perpendicular to the y-axis, and it shows dramatically
 that you can get an idea of the plane onto which the sections are being projected. Here the sections are just 3D swirls, and their topology is being
 preserved beautifully by the LLE algorithm.
 
-I hope this tutorial has shed some light on both non-linear dimensionality reduction and the ways in which Fovea can facilitate visualization either
+I hope this tutorial has shed some light on both non-linear dimensionality reduction and the ways in which Fovea can facilitate visualization, either
 in your learning or your research.
