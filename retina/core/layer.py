@@ -24,7 +24,7 @@ class Layer2D:
         Layer instances.
         """
         cls.default_style = style
-    
+
     def __init__(self, name, axes, **kwargs):
         """
         Initializes the Layer class.
@@ -35,11 +35,11 @@ class Layer2D:
                          'visible': True,
                          'style': Layer2D.default_style,
                          'lines': [],
-                         'hlines': [], 
-                         'vlines': [], 
+                         'hlines': [],
+                         'vlines': [],
                          'x_data': [],
                          'y_data': [],
-                         'plots': [], 
+                         'plots': [],
                          'patches': [],
                          'bounds': []
                          }
@@ -47,7 +47,7 @@ class Layer2D:
         self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
-        for attr in default_attrs: 
+        for attr in default_attrs:
             if not hasattr(self, attr):
                 setattr(self, attr, default_attrs[attr])
 
@@ -74,7 +74,7 @@ class Layer2D:
         Returns True if value is iterable and not a string.
         Otherwise returns False.
         """
-        return hasattr(value, "__iter__") and not isinstance(value, str) 
+        return hasattr(value, "__iter__") and not isinstance(value, str)
 
     def _method_loop(self, attr, method_name, iterable, *args, **kwargs):
         """
@@ -160,7 +160,7 @@ class Layer2D:
 
     def set_prop(self, *args, **kwargs):
         """
-        Sets property(ies) passed as *args and 
+        Sets property(ies) passed as *args and
         **kwargs for each artist in the layer.
         """
         self._method_loop(False, setp, self.__dict__.values(), *args, **kwargs)
@@ -203,7 +203,7 @@ class Layer2D:
     @py2plot
     def bound(self, shape=Rectangle, **kwargs):
         """
-        Draws a boundary having specified `shape` around the data 
+        Draws a boundary having specified `shape` around the data
         contained in the layer. Shape should be a valid Matplotlib
         patch class.
 
@@ -230,20 +230,21 @@ class Layer2D:
                 y_min = y_lmin
             if y_lmax > y_max:
                 y_max = y_lmax
-            
+
         if shape is Circle:
             x_mid, y_mid = (x_min + x_max)/2, (y_min + y_max)/2
             center = (x_mid, y_mid)
             radius = np.sqrt((y_max - y_mid) ** 2 +  (x_max - x_mid) ** 2)
             self.patches.append(shape(center, radius, fill=False, **kwargs))
-            self.bounds.append(self.patches[-1])
-        if shape is Rectangle:
+        elif shape is Rectangle:
             lower_left = (x_min, y_min)
             width = x_max - x_min
             height = y_max - y_min
             self.patches.append(shape(lower_left, width, height, fill=False, **kwargs))
-            self.axes.add_patch(self.patches[-1])
-            self.bounds.append(self.patches[-1])
+        else:
+            raise ValueError("Unsupported shape")
+        self.axes.add_patch(self.patches[-1])
+        self.bounds.append(self.patches[-1])
 
     @py2plot
     def unbound(self):
@@ -276,8 +277,8 @@ class Layer3D(Layer2D):
                              'visible': True,
                              'style': Layer3D.default_style,
                              'lines': [],
-                             'hlines': [], 
-                             'vlines': [], 
+                             'hlines': [],
+                             'vlines': [],
                              'x_data': [],
                              'y_data': [],
                              'z_data': [],
@@ -290,7 +291,7 @@ class Layer3D(Layer2D):
         self.axes = axes
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
-        for attr in self.default_attrs: 
+        for attr in self.default_attrs:
             if not hasattr(self, attr):
                 setattr(self, attr, self.default_attrs[attr])
 
@@ -309,7 +310,7 @@ class Layer3D(Layer2D):
     def add_plane(self, point, normal, **kwargs):
         """
         normal -- Normal vector (a, b, c) to the plane
-        point -- point (x, y, z) on the plane 
+        point -- point (x, y, z) on the plane
 
         Adds a plane having the equation ax + by + cz = d.
         """
@@ -317,7 +318,7 @@ class Layer3D(Layer2D):
         normal = np.array(normal)
         lims = [self.axes.get_xlim, self.axes.get_ylim, self.axes.get_zlim]
         indices = np.argsort(normal)
-        
+
         point = point[indices]
         normal = normal[indices]
         lim_list = []
@@ -325,10 +326,10 @@ class Layer3D(Layer2D):
             lim_list.append(lims[sort])
         [l, r, u] = lim_list
         d = point.dot(normal)
-        
-        (l_min, l_max), (r_min, r_max) = l(), r() 
+
+        (l_min, l_max), (r_min, r_max) = l(), r()
         l, r = np.meshgrid(np.linspace(l_min, l_max), np.linspace(r_min, r_max))
-        u = (d - normal[0] * l - normal[1] * r) * 1. / normal[2] 
+        u = (d - normal[0] * l - normal[1] * r) * 1. / normal[2]
         var_list = [l, r, u]
         diff_ind = np.argsort(indices)
         unsort = []
@@ -367,7 +368,7 @@ class Layer3D(Layer2D):
                 z_min = z_lmin
             if z_lmax > z_max:
                 z_max = z_lmax
-        
+
         self.bounds = []
         if shape == 'cube':
             x, y, z = [x_min, x_max], [y_min, y_max], [z_min, z_max]
@@ -377,7 +378,9 @@ class Layer3D(Layer2D):
                 if corner == (x_max - x_min) or corner == (y_max - y_min) or corner == (z_max - z_min):
                     self.plots.append(self.axes.plot(*zip(s, e), color=color, **kwargs))
                     self.bounds.append(self.plots[-1])
-        
+        else:
+            raise ValueError("Unsupported shape")
+
     @py2plot
     def unbound(self):
         self._method_loop(True, "set_visible", self.bounds, False)
