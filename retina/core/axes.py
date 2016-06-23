@@ -192,7 +192,7 @@ class Fovea2D(Fovea, Axes):
         del self._layers[layer]
 
     @py2plot
-    def build_layer(self, layer=None, **kwargs):
+    def build_layer(self, layer=None, *args, **kwargs):
         """
         Build and render a single axes layer.
         This method must be called after applying certain
@@ -215,7 +215,7 @@ class Fovea2D(Fovea, Axes):
         try:
             for (x, y) in zip(layer.x_data, layer.y_data):
                 layer.plots.append(
-                                   plot(x, y, **kwargs)
+                                   plot(x, y, *args, **kwargs)
                                   )
         except:
             pass

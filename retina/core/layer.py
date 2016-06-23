@@ -1,9 +1,6 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
-from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.artist import *
 from matplotlib.patches import *
 from retina.core.py2 import *
@@ -189,7 +186,7 @@ class Layer2D(object):
         """
         self._method_loop(False, self._set_linewidth, self.__dict__.values(), bold=False)
 
-    def add_data(self, *args):
+    def add_data(self, x_data, y_data):
         """
         Add data to the layer.
 
@@ -197,8 +194,8 @@ class Layer2D(object):
         Second argument should be a list, tuple or array of y data.
         Optional third argument should be a list, tuple, or array of z data.
         """
-        self.x_data.append(np.array(args[0]))
-        self.y_data.append(np.array(args[1]))
+        self.x_data.append(np.array(x_data))
+        self.y_data.append(np.array(y_data))
 
     @py2plot
     def bound(self, shape=Rectangle, **kwargs):
@@ -295,7 +292,7 @@ class Layer3D(Layer2D):
             if not hasattr(self, attr):
                 setattr(self, attr, self.default_attrs[attr])
 
-    def add_data(self, *args):
+    def add_data(self, x_data, y_data, z_data):
         """
         Add data to the layer.
 
@@ -303,9 +300,9 @@ class Layer3D(Layer2D):
         Second argument should be a list, tuple or array of y data.
         Optional third argument should be a list, tuple, or array of z data.
         """
-        self.x_data.append(np.array(args[0]))
-        self.y_data.append(np.array(args[1]))
-        self.z_data.append(np.array(args[2]))
+        self.x_data.append(np.array(x_data))
+        self.y_data.append(np.array(y_data))
+        self.z_data.append(np.array(z_data))
 
     def add_plane(self, point, normal, **kwargs):
         """
