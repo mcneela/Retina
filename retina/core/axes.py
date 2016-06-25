@@ -289,8 +289,9 @@ class Fovea3D(Fovea2D, Axes3D):
         try:
             for x, y, z in zip(layer.x_data, layer.y_data, layer.z_data):
                 layer.plots.append(
-                                   plot(x, y, z, layer.style, **kwargs)
+                                   plot(x, y, z, **kwargs)
                                   )
+            
         except:
             pass
         if layer.lines:
