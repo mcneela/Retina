@@ -5,6 +5,7 @@ from retina.mlearn.hopfield.hopfield_network import *
 from retina.core.axes import Fovea3D
 from matplotlib.pyplot import *
 from matplotlib import gridspec
+from matplotlib.widgets import Button
 from sklearn.decomposition import PCA
 from scipy.interpolate import griddata as gd
 
@@ -98,7 +99,7 @@ class VisualHopfield(HopfieldNetwork):
             for state in learning_data:
                 self.learn([state], inject=self._learn_inject)
 
-    def _train_inject(self, prev_weights, iteration, delay=.1):
+    def _train_inject(self, prev_weights, iteration, delay=.01):
         """
         Provides drawing capabilities for the superclass train() method.
 
@@ -150,7 +151,7 @@ class VisualHopfield(HopfieldNetwork):
         delay       The time delay between successive iterations of learning.
         """
         state = np.array(state)
-        self.state_plot.set_data(state.reshape(2, 2))
+        self.state_plot.set_data(state.reshape(5, 5))
         currentenergy = self.energy(state)
         current_state = self.pca.transform(state)
         if self.cs_plot:
@@ -188,6 +189,12 @@ class VisualHopfield(HopfieldNetwork):
                                           fontsize=14, horizontalalignment='center')
         self.iteration = self.network_fig.text(0.6, 0.95, "Current Iteration: 0",
                                                fontsize=14, horizontalalignment='center')
+
+        # Widget Functionality
+        view_wf = axes([.53, 0.91, 0.08, 0.025])
+        self.view_wfbutton = Button(view_wf, 'Wireframe')
+        view_attract = axes([.615, 0.91, 0.08, 0.025])
+        self.view_attractbutton = Button(view_attract, 'Attractors')
 
     def _draw_network(self):
         """
@@ -238,14 +245,26 @@ class VisualHopfield(HopfieldNetwork):
         attracts = self.energy_diagram.add_layer("attractors")
         wireframe.add_data(xi, yi, zi)
         mesh_plot.add_data(xi, yi, zi)
-        self.energy_diagram.build_layer("wireframe", plot=self.energy_diagram.plot_wireframe,
-                                        colors=(0.5, 0.5, 0.5, 0.5), alpha=0.5)
-        self.energy_diagram.build_layer("mesh_plot", cmap=cm.coolwarm, linewidth=1)
+        self.energy_diagram.build_layer(wireframe.name, plot=self.energy_diagram.plot_wireframe,
+                                        colors=(0.5, 0.5, 0.5, 0.5), alpha=0.2)
+        self.energy_diagram.build_layer(mesh_plot.name, plot=self.energy_diagram.plot_surface, cmap=cm.coolwarm)
         self.contour_diagram.contour(xi, yi, zi)
         grid = self.pca.transform(attractors)
         z = np.array([self.energy(state) for state in attractors])
         attracts.add_data(grid[:,0], grid[:,1], z)
         self.energy_diagram.build_layer("attractors", plot=self.energy_diagram.scatter, s=80, c='g', marker='o')
+        wireframe.hide()
+        attracts.hide()
+
+        def wireframe_click(event):
+            wireframe.toggle_display()
+            mesh_plot.toggle_display()
+
+        def attractor_click(event):
+            attracts.toggle_display()
+
+        self.view_wfbutton.on_clicked(wireframe_click)
+        self.view_attractbutton.on_clicked(attractor_click)
 
     def _normalize_network(self):
         """
@@ -263,7 +282,7 @@ class VisualHopfield(HopfieldNetwork):
         Plot state to the state_diagram.
         """
         state = np.array(state)
-        self.state_plot = self.state_diagram.imshow(state.reshape(2, 2),
+        self.state_plot = self.state_diagram.imshow(state.reshape(5, 5),
                                                     cmap=cm.binary,
                                                     interpolation='nearest')
         self.state_plot.norm.vmin, self.state_plot.norm.vmax = -1, 1
