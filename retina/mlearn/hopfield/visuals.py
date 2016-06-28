@@ -1,6 +1,5 @@
 import numpy as np
 import time, warnings
-import mpld3
 from retina.mlearn.hopfield.hopfield_network import *
 from retina.core.axes import Fovea3D
 from matplotlib.pyplot import *
