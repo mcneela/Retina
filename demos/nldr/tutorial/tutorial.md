@@ -12,14 +12,19 @@ algorithms that perform nldr, and each facilitates its own set of strengths
 and weaknesses. For this demonstration, we will use the default Locally Linear
 Embedding algorithm provided with Scikit-Learn to perform the backend dimensionality
 reduction, and subsequently visualize the transformed data using Fovea's suite
-of tools.
+of tools. For more information on the mathematics behind the LLE algorithm, please
+see these fine papers:
+
+[https://www.cs.nyu.edu/~roweis/lle/papers/lleintro.pdf]
+[https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/roweis-science-00.pdf]
+
 
 ## The Dataset
 
 For this example, we will perform dimensionality reduction on the Swiss Roll
-dataset, aptly named given its resemblance to the Swiss Roll cake of great culinary repute.
-This object is commonly used in evaluating the performance of nldr algorithms as it exhibits
-a high degree of structured non-linearity. Pictured here is the roll with
+dataset, aptly named given its resemblance to the Swiss Roll cake of culinary repute.
+This object is commonly used in evaluating the performance of nldr algorithms because
+ it exhibits a great degree of structured non-linearity. Pictured here is the roll with
 a rainbow-like Matplotlib colormap applied.
 
 ![Swiss Roll 3D](imgs/swiss_roll.png "Swiss Roll")  
@@ -38,8 +43,8 @@ Next, we will conjure the Swiss Roll
     X, color = datasets.samples_generator.make_swiss_roll(n_samples=1500)
 
 In the datasets module, `sample_generator` is a class that provides a number of utility
-functions for generating interesting data. The class' `make_swiss_roll` function does
-exactly as expected: generates a 3D swiss roll dataset. The function returns two items.
+functions for creating interesting data. The class' `make_swiss_roll` function does
+exactly as expected: generates a 3D swiss roll dataset and returns two items.
 The first, `X`, is an n x 3 array of the points residing in the dataset, where `n = n_samples`. The second
 is a 1 x n array of the relative positions of each row in `X`. It is this sort of relational
 data that we need in order to apply a Matplotlib colormap to the roll, so we call it `color`. 
@@ -68,12 +73,12 @@ syntax and features for constructing the bare bones setup of your visualization 
 into Fovea's additional capabilities in order to enhance the interactivity of that sparse construction.
 As such, we will import Matplotlib's pyplot module, giving it the alias of `plt` as is common practice.
 
-    `import matplotlib.pyplot as plt`
+    import matplotlib.pyplot as plt
 
 We also need to import Fovea's 2D and 3D axes classes. These are located in the `retina.core.axes` module
 and we import them like so:
 
-    `import retina.core.axes`
+    import retina.core.axes
 
 Now that the requisite modules have been imported, the first thing that we'll need to do is create a Matplotlib
 figure to hold our axes:
@@ -82,7 +87,7 @@ figure to hold our axes:
 
 For this demonstration we will be sectioning the Swiss Roll into five constituent parts and plotting their 2D
 projections individually. Thus we will need one 3D axes to hold the original 3D dataset, and five 2D axes to
-display each section's projection for a total of six axes altogether. We can use Matplotlib's `GridSpec` utility
+display each section's projection. This yields a total of six axes altogether. We can use Matplotlib's `GridSpec` utility
 to arrange these axes in a 2 x 3 tabular fashion as follows:
 
     from matplotlib import gridspec
@@ -117,14 +122,14 @@ we want to section along the x-axis (`axis=0`), although alternatively we could 
 
 Now, because we have segmented our data, we must do the same for our color array in order to be able to faithfully apply
 the proper Matplotlib color map to each section of data individually. Our color array is one-dimensional, so we will need
-to permute the ordering of the color values in the same way as the rows of our data matrix were permuted by the `ordered_section`
+to permute the ordering of the color values in the same way that the rows of our data matrix were permuted by the `ordered_section`
 function. If you examine the source of `ordered_section`, you can see that the main sorting work is done in the 
 following line:
 
     data[:, axis].argsort()
 
 where `data` is the input data array. The numpy function `argsort` just returns the ordering of indices required to sort the
-array, and thus, in order to achieve the correct permutation of our colors list, we can index it like so:
+array. Therefore, in order to achieve the correct permutation of our colors list, we can index it like so:
 
     colors = color[X[:, 0].argsort()]
 
@@ -205,7 +210,7 @@ Voila! If at this point you run the script, you will get a figure window that sh
 Here we have a static visualization of each section of our data and its 2D projection, the sort of thing you could generate as a typical Matplotlib
 application. However, there's no easy way to visualize our sections here, at least not without giving each its own individual axes, and even if we
 could visualize these sections, there'd be no reliable way to identify them with their 2D counterparts. What's more, this visualization isn't interactive
-and that really hinders us from attaining the sort of intuition that we'd like to be able to gain from these plots. This is where Fovea comes to
+and that really hinders us in attaining the sort of intuition that we'd like to be able to gain from these plots. This is where Fovea comes to
 the rescue! With just a few simple key bindings that call on the core functionality of the Fovea axes, we can setup an intuitive, interactive visualization
 that will tell us more than we ever wanted to know about dimensionality reduction and the LLE algorithm.
 
@@ -234,8 +239,8 @@ updating the `self.hover_sec` attribute. All the bound method does is draw a 3D 
 identify that data's position and distribution.
 
 The `mouse_click` handler works in exactly the same way, except that instead of calling `Layer3D.bound()` it calls on the `Fovea3D.showcase()` method.
-This method takes in the name of an axes layer and displays that layer while hiding the plots in all others. This is very useful for, as the name suggests,
-showcasing some particular portion of your plotted data.
+This method takes in the name of an axes layer and displays that layer while hiding the plots in all others. This is very useful, as the name suggests,
+for showcasing some particular portion of your plotted data.
 
 ## Finishing Up
 
@@ -254,7 +259,8 @@ Here we have clicked on the 2D subplot corresponding to section two. As such, th
 slanted line of the projection can be identified with the data of the corresponding color in the 3D, showcased section. Here there is indeed a nearly
 one-to-one relationship between input data and output projection.
 
-Now, if we rerun the visualization while changing the axis along which the swiss roll is sectioned, we can gain even more insight.
+Now, if we rerun the visualization while changing the axis (i.e., changing the value of the `axis` argument of `ordered_section`) along which the swiss
+ roll is sectioned, we can gain even more insight.
 
 ![y-axis slicing](imgs/y-axis.png "Y-Axis Slicing")
 
