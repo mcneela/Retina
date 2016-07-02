@@ -15,8 +15,9 @@ reduction, and subsequently visualize the transformed data using Fovea's suite
 of tools. For more information on the mathematics behind the LLE algorithm, please
 see these fine papers:
 
-[https://www.cs.nyu.edu/~roweis/lle/papers/lleintro.pdf]
-[https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/roweis-science-00.pdf]
+https://www.cs.nyu.edu/~roweis/lle/papers/lleintro.pdf
+
+https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/roweis-science-00.pdf
 
 
 ## The Dataset
