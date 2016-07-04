@@ -74,16 +74,16 @@ class VisualHopfield(HopfieldNetwork):
         self.neurons = [VisualNeuron(i * d_theta, num_neurons) for i in range(num_neurons)]
         self.cs_plot = None
 
-    def run_visualization(self, training_data, learning_data=None):
+    def run_visualization(self, training_data, recall_data=None):
         """
         Runs the Hopfield Network visualization. Trains the network on training_data and
-        learns on learning_data.
+        recalls on recall_data.
         """
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             ion()
             self.training_data = training_data
-            self.learning_data = learning_data
+            self.recall_data = recall_data
             self._setup_display()
             self._draw_network()
             self._plot_state([-1 for i in range(self.num_neurons)])
@@ -95,8 +95,8 @@ class VisualHopfield(HopfieldNetwork):
             self._plot_energy()
             print("Learning...")
             self._set_mode("Learning")
-            for state in learning_data:
-                self.learn([state], inject=self._learn_inject)
+            for state in recall_data:
+                self.recall([state], inject=self._recall_inject)
             print("Finished.")
             self._set_mode("Finished")
 
@@ -104,8 +104,8 @@ class VisualHopfield(HopfieldNetwork):
         """
         Provides drawing capabilities for the superclass train() method.
 
-        prev_weights        The network weight matrix before a round of learning
-                            is computed
+        prev_weights        The network weight matrix before a round of recalling
+                            is undergone
         iteration           The current iteration count
         delay               The time delay between each iteration. Larger delays
                             slow the rate of visualization and vice versa.
@@ -142,14 +142,14 @@ class VisualHopfield(HopfieldNetwork):
         """
         self.iteration.set_text("Current Iteration: " + str(num))
 
-    def _learn_inject(self, state, iteration, delay=.05):
+    def _recall_inject(self, state, iteration, delay=.05):
         """
-        Provides drawing capabilities for the superclass learn() method.
+        Provides drawing capabilities for the superclass recall() method.
 
         state       The current state of the network. Provided at each step in the
-                    learning process.
+                    recall process.
         iteration   The current iteration count.
-        delay       The time delay between successive iterations of learning.
+        delay       The time delay between successive iterations of recalling.
         """
         state = np.array(state)
         self.state_plot.set_data(state.reshape(5, 5))
@@ -229,7 +229,7 @@ class VisualHopfield(HopfieldNetwork):
         self.pca.fit(attractors)
         paths = [attractors]
         for i in range(path_length):
-            states = self.learn(states, steps=1)
+            states = self.recall(states, steps=1)
             paths.append(states)
         x = y = np.linspace(-1, 1, 100)
         X,Y = np.meshgrid(x, y)
@@ -271,7 +271,7 @@ class VisualHopfield(HopfieldNetwork):
         """
         Normalizes the line width of each visual connection in the network.
 
-        To be called between the training and learning steps of the visualization.
+        To be called between the training and recall steps of the visualization.
         """
         for neuron in self.neurons:
             for line in neuron.connections.values():

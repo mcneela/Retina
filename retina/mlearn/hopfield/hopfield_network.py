@@ -23,7 +23,7 @@ class HopfieldNetwork(object):
         self.num_neurons = num_neurons
         self._weights = np.zeros((self.num_neurons, self.num_neurons), dtype=np.int_)
         self._trainers = {"hebbian": self._hebbian, "storkey": self._storkey}
-        self._learn_modes = {"synchronous": self._synchronous, "asynchronous": self._asynchronous}
+        self._recall_modes= {"synchronous": self._synchronous, "asynchronous": self._asynchronous}
         self._vec_activation = np.vectorize(self._activation)
         self._train_act = np.vectorize(self._train_activation)
 
@@ -67,23 +67,23 @@ class HopfieldNetwork(object):
         except KeyError:
             print(method + " is not a valid training method.")
 
-    def learn(self, patterns, steps=None, mode="asynchronous", inject = lambda x, y: None):
+    def recall(self, patterns, steps=None, mode="asynchronous", inject = lambda x, y: None):
         """
         Wrapper method for self._synchronous and self._asynchronous.
 
         To be used after training the network.
 
-        patterns        The input vectors to learn
+        patterns        The input vectors to recall. 
 
         steps           Number of steps to compute. Defaults to None.
 
-        Given 'patterns', learn(patterns) classifies these patterns based on those
+        Given 'patterns', recall(patterns) classifies these patterns based on those
         which the network has already seen.
         """
         try:
-            return self._learn_modes[mode](patterns, steps, inject)
+            return self._recall_modes[mode](patterns, steps, inject)
         except KeyError:
-            print(mode + " is not a valid learning mode.")
+            print(mode + " is not a valid recall mode.")
 
     def energy(self, state):
         """
@@ -94,9 +94,9 @@ class HopfieldNetwork(object):
     def _synchronous(self, patterns, steps=10):
         """
         Updates all network neurons simultaneously during each iteration of the
-        learning process.
+        recall process.
 
-        Faster than asynchronous updating, but convergence of the learning method
+        Faster than asynchronous updating, but convergence of the recall method
         is not guaranteed.
         """
         if steps:
@@ -105,17 +105,17 @@ class HopfieldNetwork(object):
             return self._vec_activation(patterns)
         else:
             while True:
-                post_learn = self._vec_activation(np.dot(patterns, self._weights))
-                if np.array_equal(patterns, post_learn):
-                    return self._vec_activation(post_learn)
-                patterns = post_learn
+                post_recall = self._vec_activation(np.dot(patterns, self._weights))
+                if np.array_equal(patterns, post_recall):
+                    return self._vec_activation(post_recall)
+                patterns = post_recall
 
     def _asynchronous(self, patterns, steps=None, inject=lambda x:None):
         """
-        Updates a single, randomly selected neuron during each iteration of the learning
+        Updates a single, randomly selected neuron during each iteration of the recall 
         process.
 
-        Convergence is guaranteed, but the learning is slower than when neurons are updated
+        Convergence is guaranteed, but recalling is slower than when neurons are updated
         in synchrony.
         """
         patterns = np.array(patterns)
@@ -125,19 +125,19 @@ class HopfieldNetwork(object):
                 patterns[:,index] = np.dot(self._weights[index,:], np.transpose(patterns))
             return self._vec_activation(patterns)
         else:
-            post_learn = patterns.copy()
-            inject(post_learn, 0)
+            post_recall = patterns.copy()
+            inject(post_recall, 0)
             indicies = set()
             i = 1
             while True:
                 index = random.randrange(self.num_neurons)
                 indicies.add(index)
-                post_learn[:,index] = np.dot(self._weights[index,:], np.transpose(patterns))
-                post_learn = self._vec_activation(post_learn)
-                inject(post_learn, i)
-                if np.array_equal(patterns, post_learn) and len(indicies) == self.num_neurons:
-                    return self._vec_activation(post_learn)
-                patterns = post_learn.copy()
+                post_recall[:,index] = np.dot(self._weights[index,:], np.transpose(patterns))
+                post_recall = self._vec_activation(post_recall)
+                inject(post_recall, i)
+                if np.array_equal(patterns, post_recall) and len(indicies) == self.num_neurons:
+                    return self._vec_activation(post_recall)
+                patterns = post_recall.copy()
                 i += 1
 
     def _activation(self, value, threshold=0):
