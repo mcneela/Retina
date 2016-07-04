@@ -197,9 +197,6 @@ class VisualHopfield(HopfieldNetwork):
         view_attract = axes([.615, 0.91, 0.08, 0.025])
         self.view_attractbutton = Button(view_attract, 'Attractors')
 
-        # Interactivity
-        interactor = EventSystem(self)
-
     def _draw_network(self):
         """
         Draws the network diagram to the Matplotlib canvas.
@@ -300,19 +297,3 @@ class VisualHopfield(HopfieldNetwork):
                                                aspect='auto')
         self.cbar_axes = axes([0.91, 0.1, .017, .3625])
         cbar = self.network_fig.colorbar(self.cmap, cax=self.cbar_axes)
-
-class EventSystem(object):
-    def __init__(self, hopfield_net):
-        self.network = hopfield_net
-        self.network.network_fig.canvas.mpl_connect("motion_notify_event", self.mouse_over)
-        self.network.network_fig.canvas.mpl_connect('button_press_event', self.mouse_click)
-
-    def mouse_over(self, event):
-        if event.inaxes is self.network.main_network:
-            connection = event.artist
-            print(connection.color)
-
-    def mouse_click(self, event):
-        print(event.inaxes)
-        if event.inaxes is self.network.main_network:
-            print("clicked dick~!")
