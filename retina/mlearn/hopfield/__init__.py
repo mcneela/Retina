@@ -1,1 +1,1 @@
-from retina.mlearn.hopfield import hopfield_network, visuals, alphabet
+from retina.mlearn.hopfield import hopfield_network, visuals, alphabet, interactivity
