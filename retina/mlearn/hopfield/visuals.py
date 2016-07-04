@@ -97,6 +97,8 @@ class VisualHopfield(HopfieldNetwork):
             self._set_mode("Learning")
             for state in learning_data:
                 self.learn([state], inject=self._learn_inject)
+            print("Finished.")
+            self._set_mode("Finished")
 
     def _train_inject(self, prev_weights, iteration, delay=.01):
         """
@@ -293,4 +295,5 @@ class VisualHopfield(HopfieldNetwork):
         self.cmap = self.weight_diagram.imshow(self._train_act(self.weights()),
                                                vmin=-1, vmax=1, cmap='viridis',
                                                aspect='auto')
-        cbar = self.network_fig.colorbar(self.cmap)
+        self.cbar_axes = axes([0.91, 0.1, .017, .3625])
+        cbar = self.network_fig.colorbar(self.cmap, cax=self.cbar_axes)
