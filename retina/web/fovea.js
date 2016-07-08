@@ -1,17 +1,19 @@
-function Layer(name){
+function Layer(name, graphDiv){
 	this.name = name;
+	this.graphDiv = graphDiv;
 	this.traces = [];
 	this.hlines = [];
 	this.vlines = [];
 	this.bounds = [];
 	this.x_data = [];
 	this.y_data = [];
+	this.visible = true;
 
 	this.isIterable = function(obj) {
 		if (obj == null) {
 			return false;
 		}
-		return typeof obj[Symbol.iterator] === 'function';
+		return (typeof obj[Symbol.iterator] === 'function') && (typeof obj === 'object');
 	};
 
 	this.tryMethod = function(val, methodName) {
@@ -46,14 +48,22 @@ function Layer(name){
 
 	this.propertyLoop = function(iterable, propertyName, propertyValue) {
 		for (var item in iterable) {
-			if (this.isIterable(item) === true) {
-				console.log(item);
-				this.propertyLoop(item, propertyName, propertyValue, arguments);
+			if (this.isIterable(iterable[item]) === true) {
+				this.propertyLoop(iterable[item], propertyName, propertyValue, arguments);
 			}
 			else {
-				item[propertyName] = propertyValue;
+				iterable[item][propertyName] = propertyValue;
 			}
 		}
+	};
+
+	this.getTraceIndices = function() {
+		indices = [];
+		for (var trace in this.traces) {
+			var index = this.graphDiv.data.indexOf(this.traces[trace]);
+			indices.push(index);
+		}
+		return indices;
 	};
 };
 
@@ -62,9 +72,45 @@ Layer.prototype.addTrace = function(trace) {
 };
 
 Layer.prototype.show = function() {
-	this.propertyLoop(this, 'visible', true);
+	this.visible = true;
+	traceIndices = this.getTraceIndices();
+	var update = {
+		visible: true
+	};
+	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
 Layer.prototype.hide = function() {
+	this.visible = false;
+	traceIndices = this.getTraceIndices();
+	var update = {
+		visible: false
+	};
+	Plotly.restyle(this.graphDiv, update, traceIndices);
+};
+
+Layer.prototype.safeShow = function() {
+	this.visible = true;
+	this.propertyLoop(this, 'visible', true);
+	Plotly.redraw(this.graphDiv);
+};
+
+Layer.prototype.safeHide = function() {
+	this.visible = false;
 	this.propertyLoop(this, 'visible', false);
+	Plotly.redraw(this.graphDiv);
+};
+
+Layer.prototype.toggleDisplay = function() {
+	if (this.visible === true) {
+		this.hide();
+	}
+	else {
+		this.show();
+	}
+};
+
+Layer.prototype.setProperty = function(update) {
+	traceIndices = this.getTraceIndices();
+	Plotly.restyle(this.graphDiv, update, traceIndices);
 };

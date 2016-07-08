@@ -16,7 +16,7 @@ for(i = 0; i < pointCount; i++){
 	c.push(i);
 };
 
-plotTrace = [{
+plotTrace = {
   type: 'scatter3d',
   mode: 'lines+markers',
   x: x,
@@ -32,16 +32,11 @@ plotTrace = [{
     colorscale: "Greens",
     cmin: -20,
     cmax: 50
-  }},                  
-];
+  }};
 
-myLayer = new Layer("myLayer");
+myLayer = new Layer("myLayer", graph);
 myLayer.addTrace(plotTrace);
-for (var item in myLayer) {
-	console.log(myLayer[item]);
-	}
+myLayer.safeHide();
+Plotly.plot(graph, [plotTrace]);
 
 debugger
-myLayer.hide();
-Plotly.plot(graph, plotTrace);
-
