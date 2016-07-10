@@ -1,4 +1,4 @@
-function Layer(name, graphDiv){
+function Layer2D(name, graphDiv){
 	this.name = name;
 	this.graphDiv = graphDiv;
 	this.traces = [];
@@ -7,7 +7,7 @@ function Layer(name, graphDiv){
 	this.bounds = [];
 	this.visible = true;
 
-	this.isEmpty(array) {
+	this.isEmpty = function(array) {
 		if (typeof array !== "undefined" && array.length > 0) {
 			return true;
 		}
@@ -72,11 +72,11 @@ function Layer(name, graphDiv){
 	};
 };
 
-Layer.prototype.addTrace = function(trace) {
+Layer2D.prototype.addTrace = function(trace) {
 	this.traces.push(trace);
 };
 
-Layer.prototype.show = function() {
+Layer2D.prototype.show = function() {
 	this.visible = true;
 	traceIndices = this.getTraceIndices();
 	var update = {
@@ -95,7 +95,7 @@ Layer.prototype.show = function() {
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
-Layer.prototype.hide = function() {
+Layer2D.prototype.hide = function() {
 	this.visible = false;
 	traceIndices = this.getTraceIndices();
 	var update = {
@@ -117,19 +117,19 @@ Layer.prototype.hide = function() {
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
-Layer.prototype.safeShow = function() {
+Layer2D.prototype.safeShow = function() {
 	this.visible = true;
 	this.propertyLoop(this, 'visible', true);
 	Plotly.redraw(this.graphDiv);
 };
 
-Layer.prototype.safeHide = function() {
+Layer2D.prototype.safeHide = function() {
 	this.visible = false;
 	this.propertyLoop(this, 'visible', false);
 	Plotly.redraw(this.graphDiv);
 };
 
-Layer.prototype.toggleDisplay = function() {
+Layer2D.prototype.toggleDisplay = function() {
 	if (this.visible === true) {
 		this.hide();
 	}
@@ -138,12 +138,12 @@ Layer.prototype.toggleDisplay = function() {
 	}
 };
 
-Layer.prototype.setProperty = function(update) {
+Layer2D.prototype.setProperty = function(update) {
 	traceIndices = this.getTraceIndices();
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
-Layer.prototype.addShape = function(shape) {
+Layer2D.prototype.addShape = function(shape) {
 	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
 		plotShapes = this.graphDiv.layout.shapes;
 		plotShapes.push(shape);
@@ -155,7 +155,7 @@ Layer.prototype.addShape = function(shape) {
 	Plotly.relayout(this.graphDiv, plotShapes);
 }
 
-Layer.prototype.computeAxesBounds= function() {
+Layer2D.prototype.computeAxesBounds= function() {
 	var xMax = Math.max.apply(Math, this.graphDiv.data[0].x);
 	var xMin = Math.min.apply(Math, this.graphDiv.data[0].x);
 	var yMax = Math.max.apply(Math, this.graphDiv.data[0].y);
@@ -181,7 +181,7 @@ Layer.prototype.computeAxesBounds= function() {
 	return [xMin, xMax, yMin, yMax];
 };
 
-Layer.prototype.computeLayerBounds= function() {
+Layer2D.prototype.computeLayerBounds= function() {
 	var xMax = Math.max.apply(Math, this.traces[0].x);
 	var xMin = Math.min.apply(Math, this.traces[0].x);
 	var yMax = Math.max.apply(Math, this.traces[0].y);
@@ -207,7 +207,7 @@ Layer.prototype.computeLayerBounds= function() {
 	return [xMin, xMax, yMin, yMax];
 };
 
-Layer.prototype.addVLine = function(x) {
+Layer2D.prototype.addVLine = function(x) {
 	[xMin, xMax, yMin, yMax] = this.computeAxesBounds();
 	vLine = {
 				type: 'line',
@@ -225,7 +225,7 @@ Layer.prototype.addVLine = function(x) {
 	this.addShape(vLine);
 };
 
-Layer.prototype.addHLine = function(y) {
+Layer2D.prototype.addHLine = function(y) {
 	[xMin, xMax, yMin, yMax] = this.computeAxesBounds();
 	hLine = {
 				type: 'line',
@@ -243,7 +243,7 @@ Layer.prototype.addHLine = function(y) {
 	this.addShape(hLine);
 };
 
-Layer.prototype.bound = function() {
+Layer2D.prototype.bound = function() {
 	[xMin, xMax, yMin, yMax] = this.computeLayerBounds();
 
 	var rectangle = {
@@ -259,4 +259,85 @@ Layer.prototype.bound = function() {
 	};
 	this.bounds.push(rectangle);	
 	this.addShape(rectangle);
+};
+
+function Layer3D(name, graphDiv) {
+	Layer2D.call(this, name, graphDiv);
+};
+
+Layer3D.prototype = Object.create(Layer2D.prototype);
+
+Layer3D.prototype.computeLayerBounds= function() {
+	var xMax = Math.max.apply(Math, this.traces[0].x);
+	var xMin = Math.min.apply(Math, this.traces[0].x);
+	var yMax = Math.max.apply(Math, this.traces[0].y);
+	var yMin = Math.min.apply(Math, this.traces[0].y);
+	var zMax = Math.max.apply(Math, this.traces[0].z);
+	var zMin = Math.min.apply(Math, this.traces[0].z);
+
+	for (var index in this.traces) {
+		var traceXMax = Math.max.apply(Math, this.traces[index].x);
+		var traceXMin = Math.min.apply(Math, this.traces[index].x);
+		var traceYMax = Math.max.apply(Math, this.traces[index].y);
+		var traceYMin = Math.min.apply(Math, this.traces[index].y);
+		var traceZMax = Math.max.apply(Math, this.traces[index].z);
+		var traceZMin = Math.min.apply(Math, this.traces[index].z);
+		if (traceXMax > xMax) {
+			xMax = traceXMax;
+		}
+		if (traceXMin < xMin) {
+			xMin = traceXMin;
+		}
+		if (traceYMax > yMax) {
+			yMax = traceYMax;
+		}
+		if (traceYMin < yMin) {
+			yMin = traceYMin;
+		}
+		if (traceZMin < zMin) {
+			zMin = traceZMin;
+		}
+		if (traceZMax > zMax) {
+			xMax = traceZMax;
+		}
+	}
+	return [xMin, xMax, yMin, yMax, zMin, zMax];
+};	
+
+Layer3D.prototype.cartesianProduct = function(array) {
+    return array.reduce(function(a,b) {
+        return a.map(function(x) {
+            return b.map(function(y) {
+                return x.concat(y);
+            })
+        }).reduce(function(a,b){ return a.concat(b) }, [])
+    }, [[]])
+};	
+
+Layer3D.prototype.bound = function() {
+	[xMin, xMax, yMin, yMax, zMin, zMax] = this.computeLayerBounds();
+	var x = [xMin, xMax];
+	var y = [yMin, yMax];
+	var z = [zMin, zMax];
+	
+	var corners = this.cartesianProduct([x, y, z]);
+	
+	var xVals = corners.map(function(value, index) { return value[0] });
+	var yVals = corners.map(function(value, index) { return value[1] });
+	var zVals = corners.map(function(value, index) { return value[2] });
+
+	var box = {
+				type: 'scatter3d',
+				mode: 'lines',
+				x: xVals,
+				y: yVals,
+				z: zVals,
+				line: {
+					color: 'rgba(0, 0, 0)',
+					width: 1
+				}
+	};
+	this.bounds.push(box);	
+	this.traces.push(box);
+	Plotly.addTraces(this.graphDiv, box);
 };
