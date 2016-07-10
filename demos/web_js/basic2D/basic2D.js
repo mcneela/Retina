@@ -36,3 +36,5 @@ evenPowers.addTrace(quartic);
 var traces = [quadratic, cubic, quartic];
 
 Plotly.plot(div, traces);
+
+evenPowers.addVLine(2);
