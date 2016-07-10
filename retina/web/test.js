@@ -76,4 +76,3 @@ layerButton = {
 document.body.appendChild(showBtn);
 
 Plotly.newPlot(graph, [plotTrace], {title: "Is this button here?"}, {modeBarButtonsToAdd: [layerButton]});
-debugger
