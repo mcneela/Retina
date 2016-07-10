@@ -7,6 +7,13 @@ function Layer(name, graphDiv){
 	this.bounds = [];
 	this.visible = true;
 
+	this.isEmpty(array) {
+		if (typeof array !== "undefined" && array.length > 0) {
+			return true;
+		}
+		return false;
+	};
+
 	this.isIterable = function(obj) {
 		if (obj == null) {
 			return false;
@@ -136,16 +143,54 @@ Layer.prototype.setProperty = function(update) {
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
+Layer.prototype.addShape = function(shape) {
+	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
+		plotShapes = this.graphDiv.layout.shapes;
+		plotShapes.push(shape);
+		plotShapes = {shapes: plotShapes};
+	}
+	else {
+		plotShapes = {shapes: [shape]};
+	}	
+	Plotly.relayout(this.graphDiv, plotShapes);
+}
+
 Layer.prototype.computeAxesBounds= function() {
-	var xMax = Math.max.apply(Math, this.traces[0].x);
-	var xMin = Math.min.apply(Math, this.traces[0].x);
-	var yMax = Math.max.apply(Math, this.traces[0].y);
-	var yMin = Math.min.apply(Math, this.traces[0].y);
+	var xMax = Math.max.apply(Math, this.graphDiv.data[0].x);
+	var xMin = Math.min.apply(Math, this.graphDiv.data[0].x);
+	var yMax = Math.max.apply(Math, this.graphDiv.data[0].y);
+	var yMin = Math.min.apply(Math, this.graphDiv.data[0].y);
 	for (var index in this.graphDiv.data) {
 		var traceXMax = Math.max.apply(Math, this.graphDiv.data[index].x);
 		var traceXMin = Math.min.apply(Math, this.graphDiv.data[index].x);
 		var traceYMax = Math.max.apply(Math, this.graphDiv.data[index].y);
 		var traceYMin = Math.min.apply(Math, this.graphDiv.data[index].y);
+		if (traceXMax > xMax) {
+			xMax = traceXMax;
+		}
+		if (traceXMin < xMin) {
+			xMin = traceXMin;
+		}
+		if (traceYMax > yMax) {
+			yMax = traceYMax;
+		}
+		if (traceYMin < yMin) {
+			yMin = traceYMin;
+		}
+	}
+	return [xMin, xMax, yMin, yMax];
+};
+
+Layer.prototype.computeLayerBounds= function() {
+	var xMax = Math.max.apply(Math, this.traces[0].x);
+	var xMin = Math.min.apply(Math, this.traces[0].x);
+	var yMax = Math.max.apply(Math, this.traces[0].y);
+	var yMin = Math.min.apply(Math, this.traces[0].y);
+	for (var index in this.traces) {
+		var traceXMax = Math.max.apply(Math, this.traces[index].x);
+		var traceXMin = Math.min.apply(Math, this.traces[index].x);
+		var traceYMax = Math.max.apply(Math, this.traces[index].y);
+		var traceYMin = Math.min.apply(Math, this.traces[index].y);
 		if (traceXMax > xMax) {
 			xMax = traceXMax;
 		}
@@ -176,15 +221,8 @@ Layer.prototype.addVLine = function(x) {
 				}
 			};
 
-	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
-		plotShapes = this.graphDiv.layout.shapes;
-		plotShapes.push(vLine);
-		plotShapes = {shapes: plotShapes};
-	}
-	else {
-		plotShapes = {shapes: [vLine]};
-	}	
-	Plotly.relayout(this.graphDiv, plotShapes);
+	this.vlines.push(vLine);
+	this.addShape(vLine);
 };
 
 Layer.prototype.addHLine = function(y) {
@@ -201,13 +239,24 @@ Layer.prototype.addHLine = function(y) {
 				}
 			};
 
-	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
-		plotShapes = this.graphDiv.layout.shapes;
-		plotShapes.push(hLine);
-		plotShapes = {shapes: plotShapes};
-	}
-	else {
-		plotShapes = {shapes: [hLine]};
-	}	
-	Plotly.relayout(this.graphDiv, plotShapes);
+	this.hlines.push(hLine);
+	this.addShape(hLine);
+};
+
+Layer.prototype.bound = function() {
+	[xMin, xMax, yMin, yMax] = this.computeLayerBounds();
+
+	var rectangle = {
+						type: 'rect',
+						x0: xMin,
+						y0: yMin,
+						x1: xMax,
+						y1: yMax,
+						line: {
+							color: 'rgba(0, 0, 0)',
+							width: 1
+						}
+	};
+	this.bounds.push(rectangle);	
+	this.addShape(rectangle);
 };
