@@ -5,8 +5,6 @@ function Layer(name, graphDiv){
 	this.hlines = [];
 	this.vlines = [];
 	this.bounds = [];
-	this.x_data = [];
-	this.y_data = [];
 	this.visible = true;
 
 	this.isIterable = function(obj) {
@@ -77,6 +75,16 @@ Layer.prototype.show = function() {
 	var update = {
 		visible: true
 	};
+	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
+		shapeUpdate = this.graphDiv.layout.shapes;
+		for (index in shapeUpdate) {
+			if (shapeUpdate[index].type == 'line') {
+			   shapeUpdate[index].line.width = 1;
+			}	   
+		}
+		shapeUpdate = { shapes: shapeUpdate };
+		Plotly.relayout(this.graphDiv, shapeUpdate);
+	}
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
@@ -86,6 +94,19 @@ Layer.prototype.hide = function() {
 	var update = {
 		visible: false
 	};
+	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
+		shapeUpdate = this.graphDiv.layout.shapes;
+		for (index in shapeUpdate) {
+			if (shapeUpdate[index].type == 'line') {
+				// Hiding lines by changing width to 
+				// 0 is undesirably hacky. Should
+				// explore better alternatives.
+				shapeUpdate[index].line.width = 0;
+			}	   
+		}
+		shapeUpdate = { shapes: shapeUpdate };
+		Plotly.relayout(this.graphDiv, shapeUpdate);
+	}
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
@@ -113,4 +134,80 @@ Layer.prototype.toggleDisplay = function() {
 Layer.prototype.setProperty = function(update) {
 	traceIndices = this.getTraceIndices();
 	Plotly.restyle(this.graphDiv, update, traceIndices);
+};
+
+Layer.prototype.computeAxesBounds= function() {
+	var xMax = Math.max.apply(Math, this.traces[0].x);
+	var xMin = Math.min.apply(Math, this.traces[0].x);
+	var yMax = Math.max.apply(Math, this.traces[0].y);
+	var yMin = Math.min.apply(Math, this.traces[0].y);
+	for (var index in this.graphDiv.data) {
+		var traceXMax = Math.max.apply(Math, this.graphDiv.data[index].x);
+		var traceXMin = Math.min.apply(Math, this.graphDiv.data[index].x);
+		var traceYMax = Math.max.apply(Math, this.graphDiv.data[index].y);
+		var traceYMin = Math.min.apply(Math, this.graphDiv.data[index].y);
+		if (traceXMax > xMax) {
+			xMax = traceXMax;
+		}
+		if (traceXMin < xMin) {
+			xMin = traceXMin;
+		}
+		if (traceYMax > yMax) {
+			yMax = traceYMax;
+		}
+		if (traceYMin < yMin) {
+			yMin = traceYMin;
+		}
+	}
+	return [xMin, xMax, yMin, yMax];
+};
+
+Layer.prototype.addVLine = function(x) {
+	[xMin, xMax, yMin, yMax] = this.computeAxesBounds();
+	vLine = {
+				type: 'line',
+				x0: x,
+				y0: yMin,
+				x1: x,
+				y1: yMax,
+				line: {
+					color: 'rgb(0, 0, 0)',
+					width: 1,
+				}
+			};
+
+	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
+		plotShapes = this.graphDiv.layout.shapes;
+		plotShapes.push(vLine);
+		plotShapes = {shapes: plotShapes};
+	}
+	else {
+		plotShapes = {shapes: [vLine]};
+	}	
+	Plotly.relayout(this.graphDiv, plotShapes);
+};
+
+Layer.prototype.addHLine = function(y) {
+	[xMin, xMax, yMin, yMax] = this.computeAxesBounds();
+	hLine = {
+				type: 'line',
+				x0: xMin,
+				y0: y,
+				x1: xMax,
+				y1: y,
+				line: {
+					color: 'rgb(0, 0, 0)',
+					width: 1
+				}
+			};
+
+	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
+		plotShapes = this.graphDiv.layout.shapes;
+		plotShapes.push(hLine);
+		plotShapes = {shapes: plotShapes};
+	}
+	else {
+		plotShapes = {shapes: [hLine]};
+	}	
+	Plotly.relayout(this.graphDiv, plotShapes);
 };
