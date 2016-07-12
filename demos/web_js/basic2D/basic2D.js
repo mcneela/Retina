@@ -26,8 +26,8 @@ var quartic = {
 	mode: 'lines'
 };
 
-var evenPowers = new Layer("evenPowers", div);
-var oddPowers = new Layer("oddPowers", div);
+var evenPowers = new Layer2D("evenPowers", div);
+var oddPowers = new Layer2D("oddPowers", div);
 
 oddPowers.addTrace(cubic);
 evenPowers.addTrace(quadratic);
@@ -36,5 +36,3 @@ evenPowers.addTrace(quartic);
 var traces = [quadratic, cubic, quartic];
 
 Plotly.plot(div, traces);
-
-evenPowers.addVLine(2);

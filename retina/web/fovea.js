@@ -76,22 +76,28 @@ Layer2D.prototype.addTrace = function(trace) {
 	this.traces.push(trace);
 };
 
+Layer2D.prototype.shapeVisible = function(arr, bool) {
+	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
+		shapeUpdate = this.graphDiv._fullLayout.shapes;
+		for (index in shapeUpdate) {
+			if (arr.indexOf(shapeUpdate[index]) >= 0) {
+				shapeUpdate[index].line.visible = bool;
+			}	   
+		}
+		shapeUpdate = { shapes: shapeUpdate };
+		Plotly.relayout(this.graphDiv, shapeUpdate);
+	}
+};
+
 Layer2D.prototype.show = function() {
 	this.visible = true;
 	traceIndices = this.getTraceIndices();
 	var update = {
 		visible: true
 	};
-	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
-		shapeUpdate = this.graphDiv.layout.shapes;
-		for (index in shapeUpdate) {
-			if (shapeUpdate[index].type == 'line') {
-			   shapeUpdate[index].line.width = 1;
-			}	   
-		}
-		shapeUpdate = { shapes: shapeUpdate };
-		Plotly.relayout(this.graphDiv, shapeUpdate);
-	}
+	this.shapeVisible(this.hlines, true);
+	this.shapeVisible(this.vlines, true);
+	this.shapeVisible(this.bounds, true);
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
@@ -101,19 +107,9 @@ Layer2D.prototype.hide = function() {
 	var update = {
 		visible: false
 	};
-	if (this.graphDiv.layout.hasOwnProperty('shapes')) {
-		shapeUpdate = this.graphDiv.layout.shapes;
-		for (index in shapeUpdate) {
-			if (shapeUpdate[index].type == 'line') {
-				// Hiding lines by changing width to 
-				// 0 is undesirably hacky. Should
-				// explore better alternatives.
-				shapeUpdate[index].line.width = 0;
-			}	   
-		}
-		shapeUpdate = { shapes: shapeUpdate };
-		Plotly.relayout(this.graphDiv, shapeUpdate);
-	}
+	this.shapeVisible(this.hlines, false);
+	this.shapeVisible(this.vlines, false);
+	this.shapeVisible(this.bounds, false);
 	Plotly.restyle(this.graphDiv, update, traceIndices);
 };
 
