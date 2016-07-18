@@ -1,0 +1,43 @@
+body {
+	width: 100%;
+	height: 100%;
+}
+
+#sideMenu {
+	position: absolute;
+	top: 3%;
+	left: 1%;
+	z-index: 10;
+}
+
+#graphLoader {
+	display: block;
+	position: absolute;
+	z-index: 10;
+}
+
+#loadDimmer {
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	opacity: .5;
+}
+
+#graph {
+	display: block;
+	overflow: hidden;
+	position: absolute;
+	width: 100%;
+	height: 65%;
+	z-index: 1;
+}
+
+#JSON {
+	display: block;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 35%;
+	z-index: 0;
+}
