@@ -1,6 +1,6 @@
 //@sourceURL=test.js
 
-$(document).ready(function () {
+$(document).ready(function() {
 	setTimeout(function() {
 		$('.ui.accordion').accordion();
 		// $('.ui move up reveal').reveal();
@@ -127,4 +127,8 @@ $('.ui.toggle').click(function() {
 	else {
 		myLayer.hide();
 	}
+});
+
+$('#layerButton').click(function() {
+	window.open('layerManager.html', 'Layer Manager', 'width=800, height=600');
 });
