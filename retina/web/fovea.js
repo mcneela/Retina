@@ -1,4 +1,4 @@
-function Layer2D(name, graphDiv){
+function Layer2D(name, graphDiv) {
 	this.name = name;
 	this.graphDiv = graphDiv;
 	this.traces = [];
@@ -8,7 +8,8 @@ function Layer2D(name, graphDiv){
 	this.visible = true;
 
 	this.isEmpty = function(array) {
-		if (typeof array !== "undefined" && array.length > 0) {
+		if (typeof array !== "undefined"
+			   	&& array.length > 0) {
 			return true;
 		}
 		return false;
@@ -18,7 +19,8 @@ function Layer2D(name, graphDiv){
 		if (obj == null) {
 			return false;
 		}
-		return (typeof obj[Symbol.iterator] === 'function') && (typeof obj === 'object');
+		return (typeof obj[Symbol.iterator] === 'function')
+		   	&& (typeof obj === 'object');
 	};
 
 	this.tryMethod = function(val, methodName) {
@@ -38,7 +40,8 @@ function Layer2D(name, graphDiv){
 	this.methodLoop = function(attr, methodName, iterable) {
 		for (var val in iterable) {
 			if (this.isIterable(iterable[val]) === true) {
-				this.methodLoop(attr, methodName, iterable[val], arguments);
+				this.methodLoop(attr, methodName,
+					   	iterable[val], arguments);
 			}
 			else {
 				if (attr === true) {
@@ -54,7 +57,8 @@ function Layer2D(name, graphDiv){
 	this.propertyLoop = function(iterable, propertyName, propertyValue) {
 		for (var item in iterable) {
 			if (this.isIterable(iterable[item]) === true) {
-				this.propertyLoop(iterable[item], propertyName, propertyValue, arguments);
+				this.propertyLoop(iterable[item], propertyName,
+					   		      propertyValue, arguments);
 			}
 			else {
 				iterable[item][propertyName] = propertyValue;
@@ -257,6 +261,12 @@ Layer2D.prototype.bound = function() {
 	this.addShape(rectangle);
 };
 
+Layer2D.prototype.clear = function() {
+	traceIndices = this.getTraceIndices();
+	Plotly.deleteTraces(this.graphDiv, traceIndices);
+};
+
+
 function Layer3D(name, graphDiv) {
 	Layer2D.call(this, name, graphDiv);
 };
@@ -337,3 +347,6 @@ Layer3D.prototype.bound = function() {
 	this.traces.push(box);
 	Plotly.addTraces(this.graphDiv, box);
 };
+
+exports.Layer2D = Layer2D;
+exports.Layer3D = Layer3D;
