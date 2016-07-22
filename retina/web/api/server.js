@@ -1,6 +1,11 @@
 var express = require("express");
 var bodyParser = require('body-parser');
 var fovea = require('../fovea.js');
+var fs = require('fs');
+var request = require('request');
+var cheerio = require('cheerio');
+var plotly = require('plotly');
+var $ = cheerio.load(fs.readFileSync('scatter-mode.html').toString());
 /*
 var mongo = require('mongodb'),
 	Server = mongo.Server,
@@ -8,6 +13,8 @@ var mongo = require('mongodb'),
 var mongoose = require('mongoose');
 */
 
+var div = $("#e215ba24-5ac3-4e3f-b126-80b127bbb9f6");
+plotly.newPlot([], div);
 var app = express();
 var layers = {};
 
@@ -27,12 +34,16 @@ router.get('/', function(req, res) {
 app.use('/api', router);
 
 app.post("/api/layers", function(req, res) {
-	var layerObj = new fovea.Layer2D(req.body.name, req.body.graphDiv);
+	var div = $('#' + req.body.graphDiv);
+	console.log(div.attr('src'));
+	var layerObj = new fovea.Layer2D(req.body.name, div);
+	console.log(div.data.toString());
 	layers[req.body.name] = layerObj; 
 	res.send('New layer successfully created');
 });
 
 app.post("/api/layers/hide", function(req, res) {
+	console.log(layers[req.body.name]);
 	layers[req.body.name].hide();
 });
 
@@ -45,11 +56,8 @@ app.get("/api/layers/:name", function(req, res) {
 
 app.post("/api/layers/addTrace", function(req, res) {
 	var layer = layers[req.body.name];
-	console.log(req.body);
-	console.log(req.body.trace);
-	console.log(layer);
-	console.log(layer.addTrace);
-	layer.addTrace[0](req.body.trace);
+	layer.addTrace(req.body.trace);
+	res.send('Trace successfully added.');
 });
 
 app.listen(port);

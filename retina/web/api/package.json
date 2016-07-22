@@ -35,6 +35,8 @@
     "gulp-less": "~3.1.0",
     "gulp-uglify": "~1.5.4",
     "gulp": "~3.9.1",
-    "semantic-ui": "~2.2.2"
+    "semantic-ui": "~2.2.2",
+	"cheerio": "~0.20.0",
+	"plotly": "~1.0.6"
   }
 }
