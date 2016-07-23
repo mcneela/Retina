@@ -7,6 +7,46 @@ function Layer2D(name, graphDiv) {
 	this.bounds = [];
 	this.visible = true;
 
+	this.firstLayer = function() {
+		if (document.getElementById('layerButton')) {
+			this.first = false;
+			return false;
+		}
+		this.first = true;
+		return true;
+	}
+
+	if (this.firstLayer()) {
+		var layerDiv = document.createElement('div');
+		layerDiv.className = 'content';
+		layerDiv.id = 'layerNames';
+	}
+	else {
+		var layerDiv = document.getElementById('layerNames');
+	}
+	layerDiv.innerHTML += '<div class="ui toggle mini checkbox" id="layer' + this.name +'">' +
+						 '<input type="checkbox" name="' + this.name + '" checked>' +
+						 '</input>' +
+						 '<label>' + this.name + '</label>' +
+						 '</div>';
+
+	var parentDiv = document.getElementById('layerMenu');
+	parentDiv.appendChild(layerDiv);
+	$('#layer' + this.name).after('<br/>');
+
+	this.layerManager = new LayerManager(this);
+ 	console.log(this.name);
+	$('#layer' + this.name + ' :input').click(function() {
+		checked = $(this).is(':checked');
+		console.log($(this));
+		if (checked === true) {
+			this.show();
+		}
+		else { 
+			this.hide();
+		}
+	});
+
 	this.isEmpty = function(array) {
 		if (typeof array !== "undefined"
 			   	&& array.length > 0) {
@@ -347,6 +387,21 @@ Layer3D.prototype.bound = function() {
 	this.traces.push(box);
 	Plotly.addTraces(this.graphDiv, box);
 };
+
+function LayerManager(layer) {
+	if (layer.first) {
+		var parentDiv = document.getElementById('layerNames');
+		this.layerButton = document.createElement('button');
+		this.layerButton.className = 'ui mini button';
+		this.layerButton.id = 'layerButton';
+		this.layerButton.textContent = 'Open Layer Manager';
+		var lineBreak = document.createElement('br');
+		parentDiv.insertBefore(lineBreak, parentDiv.firstChild);
+		parentDiv.insertBefore(this.layerButton, parentDiv.firstChild);
+	}
+	
+}
+		
 
 exports.Layer2D = Layer2D;
 exports.Layer3D = Layer3D;
