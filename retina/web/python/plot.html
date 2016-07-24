@@ -1,0 +1,30 @@
+<html><head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script><script src='fovea.js'></script><script src='https://code.jquery.com/jquery-3.1.0.min.js'></script><script src='https://code.jquery.com/ui/1.12.0/jquery-ui.min.js'></script><link rel='stylesheet' type='text/css' href='../api/semantic/dist/semantic.min.css'><link rel='stylesheet' type='text/css' href='fovea_plot.css'><meta charset="utf-8" /></head><body>
+    <div class="ui left vertical menu" id="sideMenu">
+       <div class="ui accordion">
+            <a class="item" id="layerMenu">
+                <div class="title">
+                    <i class="dropdown icon" id="layerTitle"></i>
+                     Layers
+                </div>
+            </a>
+            <a class="item">
+                Diagnostic Tracker
+            </a>
+            <a class="item" id="linkJSON">
+                JSON Editor
+            </a>
+            <div class="item">
+                <div class="ui transparent icon input">
+                    <input type="text" placeholder="Search Plot Data...">
+                    <i class="search icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui huge text loader" id="graphLoader">
+        <p>Loading Plot</p>
+    </div>
+<div class="ui dimmer" id="loadDimmer">
+   <div id="graphDiv" style="height: 100%; width: 100%;" class="plotly-graph-div"></div>
+</div>
+<script type="text/javascript">window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("graphDiv", [{"y": [25.0, 23.00083298625573, 21.084964598084134, 19.252394835485212, 17.503123698458975, 15.837151187005416, 14.254477301124531, 12.755102040816325, 11.339025406080799, 10.006247396917953, 8.756768013327779, 7.590587255310286, 6.507705122865472, 5.508121615993337, 4.591836734693877, 3.758850478967096, 3.0091628488129945, 2.3427738442315706, 1.7596834652228237, 1.2598917117867547, 0.8433985839233651, 0.5102040816326533, 0.26030820491461837, 0.09371095376926261, 0.010412328196584735, 0.010412328196584735, 0.09371095376926261, 0.26030820491461926, 0.5102040816326533, 0.8433985839233651, 1.2598917117867567, 1.7596834652228248, 2.3427738442315706, 3.0091628488129945, 3.758850478967096, 4.591836734693879, 5.508121615993337, 6.507705122865472, 7.59058725531029, 8.756768013327783, 10.006247396917953, 11.339025406080799, 12.755102040816325, 14.254477301124528, 15.837151187005423, 17.50312369845898, 19.25239483548522, 21.084964598084134, 23.00083298625573, 25.0], "mode": "lines", "x": [-5.0, -4.795918367346939, -4.591836734693878, -4.387755102040816, -4.183673469387755, -3.979591836734694, -3.7755102040816326, -3.571428571428571, -3.36734693877551, -3.163265306122449, -2.9591836734693877, -2.7551020408163263, -2.5510204081632653, -2.3469387755102042, -2.142857142857143, -1.9387755102040813, -1.7346938775510203, -1.5306122448979593, -1.3265306122448979, -1.1224489795918364, -0.9183673469387754, -0.7142857142857144, -0.5102040816326525, -0.3061224489795915, -0.1020408163265305, 0.1020408163265305, 0.3061224489795915, 0.5102040816326534, 0.7142857142857144, 0.9183673469387754, 1.1224489795918373, 1.3265306122448983, 1.5306122448979593, 1.7346938775510203, 1.9387755102040813, 2.1428571428571432, 2.3469387755102042, 2.5510204081632653, 2.755102040816327, 2.959183673469388, 3.163265306122449, 3.36734693877551, 3.571428571428571, 3.775510204081632, 3.979591836734695, 4.183673469387756, 4.387755102040817, 4.591836734693878, 4.795918367346939, 5.0], "type": "scatter"}], {}, {"linkText": "Export to plot.ly", "showLink": false})</script><script src="fovea_plot.js"></script><script src="../api/semantic/dist/semantic.min.js"></script><script type="text/javascript">window.removeEventListener("resize");window.addEventListener("resize", function(){Plotly.Plots.resize(document.getElementById("graphDiv"));});

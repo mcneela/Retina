@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="fovea.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"   integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="   crossorigin="anonymous"></script>  
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="api/semantic/dist/semantic.min.css">
+		<link rel="stylesheet" type="text/css" href="test.css">
+	</head>
+	<body>
+		<div class="ui left vertical menu" id="sideMenu">
+			<div class="ui accordion">
+				<a class="item" id="layerMenu">
+					<div class="title">
+						<i class="dropdown icon" id="layerTitle"></i>
+						Layers
+					</div>
+				</a>
+				<a class="item">
+					Diagnostic Tracker
+				</a>
+				<a class="item" id="linkJSON">
+					JSON Editor 
+				</a>
+				<div class="item">
+					<div class="ui transparent icon input">
+						<input type="text" placeholder="Search Plot Data...">
+						<i class="search icon"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui huge text loader" id="graphLoader">
+			<p>Loading Plot</p>
+		</div>
+		<div class="ui dimmer" id="loadDimmer">
+			<div id="graph"></div>
+		</div>
+		<div id="JSON">
+			<p>JSON Attributes Here</p>
+		</div>
+		<script src="test.js"></script>
+		<script src="api/semantic/dist/semantic.min.js"></script>
+	</body>
+</html>
