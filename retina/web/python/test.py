@@ -1,3 +1,8 @@
+import numpy as np
+import fovea_plot as fp
+import plotly.graph_objs as go
+
+
 x = np.linspace(-5, 5)
 y = x ** 2
 
@@ -7,12 +12,13 @@ trace = go.Scatter(
     mode = 'lines',
 )
 
-doc = Document()
+doc = fp.Document()
 
 doc.fovea_plot([trace])
 doc.view()
 
-myLayer = Layer2D("myLayer", doc)
+myLayer = fp.Layer2D("myLayer", doc)
+myLayer.add_trace(trace)
 
 # Try running the following
 

@@ -140,22 +140,3 @@ class Layer2D(object):
     def add_vline(self, x):
         self.browser.execute_script(self.name + '.addVLine('
                                     + str(x) + ');')
-
-    
-x = np.linspace(-5, 5)
-y = x ** 2
-
-trace = go.Scatter(
-    x = x,
-    y = y,
-    mode = 'lines',
-)
-
-doc = Document()
-
-doc.fovea_plot([trace])
-doc.view()
-
-myLayer = Layer2D("myLayer", doc)
-
-
