@@ -24,6 +24,7 @@ function Layer2D(name, graphDiv) {
 	else {
 		var layerDiv = document.getElementById('layerNames');
 	}
+
 	layerDiv.innerHTML += '<div class="ui toggle mini checkbox" id="layer' + this.name +'">' +
 						 '<input type="checkbox" name="' + this.name + '" checked>' +
 						 '</input>' +
