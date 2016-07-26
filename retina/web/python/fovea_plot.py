@@ -120,7 +120,6 @@ class Layer2D(object):
     def compute_layer_bounds(self):
         bounds = self.browser.evaluate_script(self.name +
                                               '.computeLayerBounds();')
-
         return bounds
 
     def compute_figure_bounds(self):
@@ -140,3 +139,12 @@ class Layer2D(object):
     def add_vline(self, x):
         self.browser.execute_script(self.name + '.addVLine('
                                     + str(x) + ');')
+
+class Layer3D(Layer2D):
+    def __init__(self, name, document):
+        self.name = name
+        self.document = document
+        self.browser = self.document.browser
+        self.browser.execute_script('graphDiv = document.getElementById("graphDiv")')
+        self.browser.execute_script(self.name + ' = new Layer3D("' +
+                                             self.name + '", graphDiv);')
