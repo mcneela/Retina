@@ -26,27 +26,17 @@ function Layer2D(name, graphDiv) {
 	}
 
 	layerDiv.innerHTML += '<div class="ui toggle mini checkbox" id="layer' + this.name +'">' +
-						 '<input type="checkbox" name="' + this.name + '" checked>' +
-						 '</input>' +
-						 '<label>' + this.name + '</label>' +
-						 '</div>';
+						  '<input type="checkbox" name="' + this.name + '" checked>' +
+						  '</input>' +
+						  '<label>' + this.name + '</label>' +
+						  '</div>';
 
 	var parentDiv = document.getElementById('layerMenu');
 	parentDiv.appendChild(layerDiv);
 	$('#layer' + this.name).after('<br/>');
 
 	this.layerManager = new LayerManager(this);
- 	console.log(this.name);
-	$('#layer' + this.name + ' :input').click(function() {
-		checked = $(this).is(':checked');
-		console.log($(this));
-		if (checked === true) {
-			this.show();
-		}
-		else { 
-			this.hide();
-		}
-	});
+	LayerManager.bindClick();
 
 	this.isEmpty = function(array) {
 		if (typeof array !== "undefined"
@@ -299,12 +289,13 @@ Layer2D.prototype.bound = function() {
 						}
 	};
 	this.bounds.push(rectangle);	
-	this.addShape(rectangle);
+this.addShape(rectangle);
 };
 
 Layer2D.prototype.clear = function() {
 	traceIndices = this.getTraceIndices();
 	Plotly.deleteTraces(this.graphDiv, traceIndices);
+	Plotly.redraw(this.graphDiv);
 };
 
 
@@ -390,6 +381,7 @@ Layer3D.prototype.bound = function() {
 };
 
 function LayerManager(layer) {
+	var this.layer = layer;
 	if (layer.first) {
 		var parentDiv = document.getElementById('layerNames');
 		this.layerButton = document.createElement('button');
@@ -402,6 +394,18 @@ function LayerManager(layer) {
 	}
 	
 }
+
+LayerManager.prototype.bindClick = function() {
+	$('#layer' + this.layer.name + ' :input').click(function() {
+		checked = $(this).is(':checked');
+		console.log($(this));
+		if (checked === true) {
+			this.layer.show();
+		}
+		else { 
+			this.layer.hide();
+		}
+	});
 		
 
 exports.Layer2D = Layer2D;

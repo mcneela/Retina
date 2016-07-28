@@ -4,6 +4,7 @@ import numpy as np
 from selenium import webdriver
 from splinter import Browser
 from plotly.offline import plot
+from IPython.display import HTML, display
 
 class Document(object):
     def __init__(self, filename='plot.html', browser_name='chrome'):
@@ -92,6 +93,10 @@ class Document(object):
 
     def view(self):
         self.browser.visit(self.filepath)
+
+    def fovea_iplot(self, data, **kwargs):
+        plot_html = self.fovea_plot(data, **kwargs)
+        display(HTML(plot_html))
 
 class Layer2D(object):
     def __init__(self, name, document):
