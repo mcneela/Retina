@@ -1,13 +1,27 @@
 class MPNeuron(object):
-    def __init__(self, threshold, num_excite, num_inhib):
+    def __init__(self, threshold, inputs):
         self.threshold = threshold
-        self.num_excite = num_excite
-        self.num_inhib = num_inhib
+        self.inputs = inputs
 
-    def activate(self, excites, inhibs):
-        assert(len(excites) == self.num_excite and
-               len(inhibs) == self.num_inhib)
-        return sum(excites) >= self.threshold and (not sum(inhibs)) 
+    def activate(self):
+        excitations = 0 
+        for trigger in self.inputs:
+            if trigger.excitatory:
+                excitations += trigger.value
+            else:
+                if trigger.value:
+                    return 0
+        if excitations >= self.threshold:
+            return 1 
+        return 0 
+
+class MPInput(object):
+    def __init__(self, excitatory):
+        self.excitatory = excitatory
+        self.value = 0 
+
+    def trigger(self, value):
+        self.value = value 
 
 class Decoder(object):
     def __init__(self, vectors):
@@ -19,28 +33,48 @@ class Decoder(object):
         decoder_units = []
         for vector in self.vectors:
             threshold = sum(vector)
-            num_excites = threshold
-            num_inhibs = len(vector) - num_excites
-            gate = MPNeuron(threshold, num_excites, num_inhibs)
+            inputs = []
+            for i in range(self.vec_length):
+                if vector[i] == 1:
+                    inputs.append(MPInput(True))
+                else:
+                    inputs.append(MPInput(False))
+            gate = MPNeuron(threshold, inputs)
             decoder_units.append(gate)
         
-        gen_func = lambda *args: args
-        for neuron in decoder_units:
-            gen_func = lambda *args: OR(gen_func(*args), neuron.activate)
+        def decoder(*args):
+            for i in range(self.vec_length):
+                inputs[i].trigger(args[i])
+            decoder_units.reverse()
+            or_arg = decoder_units[0].activate()
+            for unit in decoder_units:
+                for i in range(self.vec_length):
+                    unit.inputs[i].trigger(args[i])
+                val = unit.activate()
+                or_arg = OR(or_arg, val)
+            return or_arg
 
-        return gen_func
+        return decoder
 
 def AND(x1, x2):
-    gate = MPNeuron(2, 2, 0)
-    return gate.activate([x1, x2], [])
+    inputs = [MPInput(True), MPInput(True)]
+    gate = MPNeuron(2, inputs)
+    inputs[0].trigger(x1)
+    inputs[1].trigger(x2)
+    return gate.activate()
 
 def OR(x1, x2):
-    gate = MPNeuron(1, 2, 0)
-    return gate.activate([x1, x2], [])
+    inputs = [MPInput(True), MPInput(True)]
+    gate = MPNeuron(1, inputs)
+    inputs[0].trigger(x1)
+    inputs[1].trigger(x2)
+    return gate.activate()
 
 def NOT(x):
-    gate = MPNeuron(0, 0, 1)
-    return gate.activate([], [x])
+    inputs = [MPInput(False)]
+    gate = MPNeuron(0, inputs)
+    inputs[0].trigger(x)
+    return gate.activate()
 
 def XOR(x1, x2):
     return AND(OR(x1, x2), 
