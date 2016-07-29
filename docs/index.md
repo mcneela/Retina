@@ -1,7 +1,8 @@
 # Retina: Scientific Visualization with Matplotlib and Plotly
 
-## Content 
+## Table of Contents
 
 - [Home](index.md)
-- [The Layer Class](layer.md)
-- [Axes](axes.md)
+- Matplotlib
+	- [The Fovea Axes](axes.md)
+	- [The Layer Classes](layer.md)
