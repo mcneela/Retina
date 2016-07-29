@@ -1,0 +1,15 @@
+site_name: Retina
+repo_url: https://github.com/mcneela/Retina.git
+site_author: Daniel McNeela
+copyright: 2016, Daniel McNeela
+theme: 'readthedocs'
+markdown:
+    extensions:
+        - codehilite
+pages:
+    - Home: 'index.md'
+    - Core Matplotlib Functionality:
+        - 'The Fovea Axes': 'matplotlib/axes.md'
+        - 'The Layer Classes': 'matplotlib/layer.md'
+        - 'Python 2 Compatibility': 'matplotlib/py2.md'
+
