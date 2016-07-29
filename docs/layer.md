@@ -1,4 +1,4 @@
-# The Layer Object
+# The Layer Objects
 
 Retina provides `Layer2D` and `Layer3D` classes designed to encapsulate related plot elements
 such that they may be manipulated, styled, and modified in tandem. This facility is provided
