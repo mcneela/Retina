@@ -1,7 +1,7 @@
 site_name: Retina
 repo_url: https://github.com/mcneela/Retina.git
 site_author: Daniel McNeela
-copyright: 2016, Daniel McNeela
+copyright: (C) 2016, Daniel McNeela
 theme: 'readthedocs'
 markdown:
     extensions:
