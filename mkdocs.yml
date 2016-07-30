@@ -8,8 +8,10 @@ markdown:
         - codehilite
 pages:
     - Home: 'index.md'
-    - Core Matplotlib Functionality:
+    - The Core Matplotlib Interface:
         - 'The Fovea Axes': 'matplotlib/axes.md'
         - 'The Layer Classes': 'matplotlib/layer.md'
         - 'Python 2 Compatibility': 'matplotlib/py2.md'
+    - The Machine Learning Module:
+        - 'The Hopfield Network': 'mlearn/hopfield.md'
 

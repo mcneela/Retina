@@ -4,5 +4,8 @@
 
 - [Home](index.md)
 - Matplotlib
-	- [The Fovea Axes](axes.md)
-	- [The Layer Classes](layer.md)
+	- [The Fovea Axes](matplotlib/axes.md)
+	- [The Layer Classes](matplotlib/layer.md)
+	- [Python 2 Compatibility](matplotlib/py2.md)
+- Machine Learning
+	- [The Hopfield Network](mlearn/hopfield.md)
