@@ -34,12 +34,12 @@ class VisualNeuron(object):
         """
         return "Visual Neuron at " + str((self.x, self.y))
 
-    def draw(self, axis):
+    def draw(self, axes):
         """
-        Draws a neuron to the provided Matplotlib axis.
+        Draws a neuron to the provided Matplotlib axes.
         """
         self.body = Circle((self.x, self.y), radius=neuron_radius, fill=False)
-        axis.add_patch(self.body)
+        axes.add_patch(self.body)
 
     def draw_connection(self, neuron, connection_color, axis):
         """
