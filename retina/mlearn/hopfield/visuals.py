@@ -41,18 +41,18 @@ class VisualNeuron(object):
         self.body = Circle((self.x, self.y), radius=neuron_radius, fill=False)
         axes.add_patch(self.body)
 
-    def draw_connection(self, neuron, connection_color, axis):
+    def draw_connection(self, neuron, connection_color, axes):
         """
         Draws a connection between two neurons.
 
         neuron              the terminal neuron of the connection
         connection_color    the color of the connection line to be drawn
-        axis                the Matplotlib axis to which the connection should be drawn
+        axes                the Matplotlib axes to which the connection should be drawn
         """
         connection = Line2D((self.x, neuron.x), (self.y, neuron.y), color=connection_color)
         self.connections.update({ neuron :  connection })
         neuron.connections.update({ self : connection })
-        axis.add_line(self.connections[neuron])
+        axes.add_line(self.connections[neuron])
 
     def delete_connection(self, neuron):
         """
