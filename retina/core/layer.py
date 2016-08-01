@@ -265,6 +265,18 @@ class Layer2D(object):
             self.__dict__[key] = None
         self.__dict__.update(self.default_attrs)
 
+    def delete(self):
+        attributes = [self.plots, self.hlines, self.vlines, self.bounds]
+        for attribute in attributes:
+            for artist in attribute:
+                try:
+                    artist[0].remove() 
+                except:
+                    artist.remove()
+            del attribute[:] 
+        self.x_data = []
+        self.y_data = []
+
 class Layer3D(Layer2D):
     def __init__(self, name, axes, **kwargs):
         """

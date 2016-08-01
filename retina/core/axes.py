@@ -96,8 +96,6 @@ class Fovea2D(Fovea, Axes):
     def __init__(self, *args, **kwargs):
         Axes.__init__(self, *args, **kwargs)
         self._layers = {}
-        self._active_layer = None
-        self._tracker = None
 
     @property
     def layers(self):
