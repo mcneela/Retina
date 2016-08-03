@@ -8,6 +8,7 @@ $(document).ready(function() {
 			$(this).remove();
 		});
 		$('#graphDiv').unwrap();
+		$('#jsonDropdown').dropdown();
 	}, 1500);
 });
 
@@ -43,16 +44,6 @@ function closeJSONEditor() {
 	graph.find('*').scale(135);
 }
 
-$('.ui.toggle').click(function() {
-	checked = $('.ui.toggle input').is(':checked');
-	if (checked === true) {
-		myLayer.show();
-	}
-	else {
-		myLayer.hide();
-	}
-});
-
-$('#layerButton').click(function() {
+$(document).on('click', '#layerButton', function() {
 	window.open('layerManager.html', 'Layer Manager', 'width=800, height=600');
 });

@@ -16,29 +16,6 @@ function Layer2D(name, graphDiv) {
 		return true;
 	}
 
-	if (this.firstLayer()) {
-		var layerDiv = document.createElement('div');
-		layerDiv.className = 'content';
-		layerDiv.id = 'layerNames';
-	}
-	else {
-		var layerDiv = document.getElementById('layerNames');
-	}
-
-	layerDiv.innerHTML += '</br>' +
-						  '<div class="ui toggle mini checkbox" id="layer' + this.name +'">' +
-						  '<input type="checkbox" name="' + this.name + '" checked>' +
-						  '</input>' +
-						  '<label>' + this.name + '</label>' +
-						  '</div>';
-
-	var parentDiv = document.getElementById('layerMenu');
-	parentDiv.appendChild(layerDiv);
-	$('#layer' + this.name).after('<br/>');
-
-	this.layerManager = new LayerManager(this);
-	LayerManager.bindClick();
-
 	this.isEmpty = function(array) {
 		if (typeof array !== "undefined"
 			   	&& array.length > 0) {
@@ -106,6 +83,10 @@ function Layer2D(name, graphDiv) {
 		}
 		return indices;
 	};
+
+	this.addToUI();
+
+	this.manager = new LayerManager(this);
 };
 
 Layer2D.prototype.addTrace = function(trace) {
@@ -299,6 +280,44 @@ Layer2D.prototype.clear = function() {
 	Plotly.redraw(this.graphDiv);
 };
 
+Layer2D.prototype.addToUI = function() {
+	if (this.firstLayer()) {
+		var layerDiv = document.createElement('div');
+		layerDiv.className = 'content';
+		layerDiv.id = 'layerNames';
+	}
+	else {
+		var layerDiv = document.getElementById('layerNames');
+	}
+
+	layerDiv.innerHTML += '</br>' +
+						  '<div class="ui toggle mini checkbox" id="layer' + this.name +'">' +
+						  '<input type="checkbox" name="' + this.name + '" checked>' +
+						  '</input>' +
+						  '<label>' + this.name + '</label>' +
+						  '</div>';
+
+	if (this.firstLayer()) {
+		var parentDiv = document.getElementById('layerMenu');
+		parentDiv.appendChild(layerDiv);
+	};
+	$('#layer' + this.name).after('<br/>');
+
+	var This = this;
+	$(document).on('click', '#layer' + this.name + ' :input', function() {
+		checked = $(this).is(':checked');
+		console.log(This);
+		if (checked === true) {
+			This.show();
+		}
+		else { 
+			This.hide();
+		}
+	});
+
+	var jsonDiv = $('#jsonDropdown .menu');
+	jsonDiv.append('<div class="item" data-value="' + this.name + '">' + this.name + '</div>')
+};
 
 function Layer3D(name, graphDiv) {
 	Layer2D.call(this, name, graphDiv);
@@ -389,9 +408,6 @@ function LayerManager(layer) {
 		this.layerButton.className = 'ui mini button';
 		this.layerButton.id = 'layerButton';
 		this.layerButton.textContent = 'Open Layer Manager';
-		$('#layerButton').click(function() {
-			window.open('layerManager.html', 'width=800, height=600');
-		});
 		var lineBreak = document.createElement('br');
 		parentDiv.insertBefore(lineBreak, parentDiv.firstChild);
 		parentDiv.insertBefore(this.layerButton, parentDiv.firstChild);
@@ -399,18 +415,7 @@ function LayerManager(layer) {
 	
 }
 
-LayerManager.prototype.bindClick = function() {
-	$('#layer' + this.layer.name + ' :input').click(function() {
-		checked = $(this).is(':checked');
-		console.log($(this));
-		if (checked === true) {
-			this.layer.show();
-		}
-		else { 
-			this.layer.hide();
-		}
-	});
-};	
+//LayerManager.bindClick();
 
-exports.Layer2D = Layer2D;
-exports.Layer3D = Layer3D;
+//exports.Layer2D = Layer2D;
+//exports.Layer3D = Layer3D;

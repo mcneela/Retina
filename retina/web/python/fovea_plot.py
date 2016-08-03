@@ -76,6 +76,14 @@ class Document(object):
         plot_div2 = plot_div[1].split('</div>')
         plot_div[0] += ('<div class="ui dimmer" id="loadDimmer">\n'
                         '   <div id=' + plot_div2[0] + '</div>\n'
+                        '   <div id="JSON">\n'
+                        '      <h1>JSON Editor</h1>\n'
+                        '      <div class="ui selection dropdown" id="jsonDropdown">\n'
+                        '           <input type="hidden" name="gender">\n'
+                        '           <i class="dropdown icon"></i>\n'
+                        '           <div class="default text">Layer</div>\n'
+                        '           <div class="menu"></div>\n'
+                        '      </div>'
                         '</div>\n'
                        )
         plot_div3 = plot_div2[1].split('</script>')
@@ -96,7 +104,7 @@ class Document(object):
 
     def fovea_iplot(self, data, **kwargs):
         plot_html = self.fovea_plot(data, **kwargs)
-        display(HTML(plot_html))
+        #display(HTML(plot_html))
 
 class Layer2D(object):
     def __init__(self, name, document):

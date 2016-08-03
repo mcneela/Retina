@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<script src="fovea.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"   integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="   crossorigin="anonymous"></script>  
+		<link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+		<link rel="stylesheet" type="text/css" href="layerManager.css">
+	</head>
+	<body>
+		<div class="ui grid">
+			<div class="column" id="leftMargin"></div>
+			<table>
+				<tr>
+					<td>
+						<div style="word-wrap: break-word; width: 300px">
+							<h2 class="ui header">Layer Manager</h2>	
+						</div>
+					</td>
+				</tr>
+			</table>
+			<div class="ui selection dropdown" id="dropDown">
+				<input type="hidden" name="Layer">
+				<i class="dropdown icon"></i>
+				<div class="default text">Layer</div>
+				<div class="menu">
+					<div class="item" data-value="1">myLayer</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="column"></div>
+			</div>
+			<div class="ui vertical buttons">
+				<button class="ui button" id="show">
+					Show Layer
+				</button>
+				<br></br>
+				<button class="ui button" id="hide">
+					Hide Layer
+				</button>
+				<br></br>
+				<button class="ui button" id="showcase">
+					Showcase Layer
+				</button>
+				<br></br>
+			</div>
+			<div class="ui vertical buttons">
+				<button class="ui button" id="bound">
+					Bound Layer
+				</button>
+				<br></br>
+				<button class="ui button" id="plane">
+					Add Plane
+				</button>
+				<br></br>
+				<button class="ui button" id="delete">
+					Delete Layer
+				</button>
+				<br></br>
+				<!-- These buttons are used for 2D Layers only.
+				<button class="ui button" id="horizontal">
+					Add Horizontal Line
+				</button>
+				<br></br>
+				<button class="ui button" id="vertical">
+					Add Vertical Line
+				</button>
+				-->
+			</div>
+			<form class="ui form">
+				<div class="field">
+					<label>Rename Layer</label>
+					<input type="text" name="rename" placeholder="Layer Name">
+				</div>
+				<button class="ui button" type="submit">Rename</button>
+			</form>
+			<img src="myLayer.png"></img>
+			<script src="layerManager.js"></script>
+			<script src="semantic/dist/semantic.min.js"></script>
+		</div>
+	</body>
