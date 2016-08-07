@@ -1,8 +1,15 @@
 from __future__ import division, absolute_import
 
 import importlib
-import PyDSTool as dst
+from matplotlib import pyplot as plt
 import math, numpy, scipy
+from PyDSTool import * #Need Events from here.
+
+from PyDSTool import args, numeric_to_traj, Point, Points
+import PyDSTool.Toolbox.phaseplane as pp
+# for potentially generalizable functions and classes to use
+import PyDSTool as dst
+import matplotlib.pyplot as plt
 # for convenience and compatibility
 import numpy as np
 import scipy as sp
@@ -211,4 +218,181 @@ def map_workspace(con, pts, *args):
 
 def extract_variable_from_wseq(varname, wseq):
     return [w[varname] for w in wseq]
+class tracker_GUI(object):
+    """
+    Abstract base class
+    """
+    pass
 
+
+class tracker_textconsole(tracker_GUI):
+    """
+    Auto-updating text consoles that are connected to a diagnostic GUI.
+    """
+    def __init__(self):
+        self.figs = {}
+        self.sim = None
+        self.calc_context = None
+
+    def __call__(self, calc_context, fignum, attribute_name):
+        self.sim = calc_context.sim
+        self.calc_context = calc_context
+        old_toolbar = plt.rcParams['toolbar']
+        plt.rcParams['toolbar'] = 'None'
+        fig = plt.figure(fignum, figsize=(2,6)) #, frameon=False)
+        plt.rcParams['toolbar'] = old_toolbar
+        if fignum in self.figs:
+            self.figs[fignum].tracked.append(attribute_name)
+        else:
+            self.figs[fignum] = args(figure=fig, tracked=[attribute_name])
+        self.sim.tracked_objects.append(self)
+
+    def show(self):
+        for fignum, figdata in self.figs.items():
+            fig = plt.figure(fignum)
+            ax = plt.axes([0., 0., 1., 1.], frameon=False, xticks=[],yticks=[])
+            #figdata.figure.clf()
+            ax.cla()
+            ax.set_frame_on(False)
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
+            wspace = self.calc_context.workspace
+            for tracked_attr in figdata.tracked:
+                for i, (obj_name, obj) in enumerate(wspace.__dict__.items()):
+                    if obj_name[0] == '_':
+                        # internal name, ignore
+                        continue
+                    try:
+                        data = getattr(obj, tracked_attr)
+                    except Exception as e:
+                        print("No attribute: '%s' in object in workspace '%s'" % (tracked_attr, wspace._name))
+                        raise
+                    plt.text(0.05, 0.05+i*0.04, '%s: %s = %.4g' % (obj_name, tracked_attr, data))
+            plt.title('%s measures of %s (workspace: %s)'%(self.calc_context.sim.name, tracked_attr,
+                                                           _escape_underscore(self.calc_context.workspace._name)))
+            fig.canvas.set_window_title("Fig %i, Workspace %s" % (fignum, self.calc_context.workspace._name))
+        #plt.show()
+
+
+
+class tracker_plotter(tracker_GUI):
+    """
+    Auto-updating plots that are connected to a diagnostic GUI.
+    """
+    def __init__(self, clear_on_refresh=True):
+        self.figs = {}
+        self.sim = None
+        self.calc_context = None
+        self.clear_on_refresh = clear_on_refresh
+        self.ever_shown = False
+
+    def __call__(self, calc_context, fignum, xstr, ystr, style):
+        self.sim = calc_context.sim
+        self.calc_context = calc_context
+        fig = plt.figure(fignum)
+        new_track = args(xstr=xstr, ystr=ystr, style=style)
+        if fignum in self.figs:
+            self.figs[fignum].tracked.append(new_track)
+        else:
+            self.figs[fignum] = args(figure=fig, tracked=[new_track])
+        self.sim.tracked_objects.append(self)
+
+    def show(self):
+        for fignum, figdata in self.figs.items():
+            fig = plt.figure(fignum)
+            ax = plt.gca()
+            #figdata.figure.clf()
+            if self.clear_on_refresh:
+                ax.cla()
+            wspace = self.calc_context.workspace
+            for tracked in figdata.tracked:
+                try:
+                    xdata = getattr(wspace, tracked.xstr)
+                except Exception as e:
+                    print("Failed to evaluate: '%s' in workspace '%s'" % (tracked.xstr, wspace._name))
+                    raise
+                try:
+                    ydata = getattr(self.calc_context.workspace, tracked.ystr)
+                except Exception as e:
+                    print("Failed to evaluate: '%s' in workspace '%s'" % (tracked.ystr, wspace._name))
+                    raise
+                if self.clear_on_refresh or not self.ever_shown:
+                    # only show labels once
+                    ax.plot(xdata, ydata,
+                            tracked.style, label=_escape_underscore(tracked.ystr))
+                else:
+                    ax.plot(xdata, ydata, tracked.style)
+            if not self.ever_shown:
+                plt.legend()
+                plt.title('%s measures vs %s (workspace: %s)'%(self.calc_context.sim.name, tracked.xstr,
+                                                           _escape_underscore(self.calc_context.workspace._name)))
+                fig.canvas.set_window_title("Fig %i, Workspace %s" % (fignum, self.calc_context.workspace._name))
+                self.ever_shown = True
+        #plt.show()
+
+class tracker_manager(object):
+    """
+    Track different quantities from different calc contexts in different
+    figures. Cannot re-use same figure with different contexts.
+    """
+    def __init__(self):
+        self.tracked = {}
+        # currently, all_figs does not automatically release figures if
+        # contexts are deleted or replaced
+        self.all_figs = []
+
+    def __call__(self, calc_context, fignum, plot_metadata=None,
+                 text_metadata=None, clear_on_refresh=True):
+        """
+        plot_metadata (default None) = (xstr, ystr, style)
+        *or*
+        text_metadata (default None) = attribute_name
+
+        If text_metadata used, the tracker object is assumed to be a
+        textconsole type that accesses declared python objects to access an
+        attribute
+
+        clear_on_refresh (default True) causes track plots to clear on refresh
+           per subplot axes
+        """
+        valid_input = plot_metadata is None or text_metadata is None
+        if not valid_input:
+            raise ValueError("Only use one of plot or text metadata arguments")
+        try:
+            xstr, ystr, style = plot_metadata
+        except TypeError:
+            # None is not iterable
+            track_plot = False
+            attribute_name = text_metadata
+        else:
+            track_plot = True
+        if calc_context in self.tracked:
+            if track_plot:
+                # tracker_plotter type
+                self.tracked[calc_context](calc_context, fignum, xstr, ystr, style)
+            else:
+                # tracker_textconsole type
+                self.tracked[calc_context](calc_context, fignum, attribute_name)
+            if fignum not in self.all_figs:
+                self.all_figs.append(fignum)
+        else:
+            if fignum in self.all_figs:
+                raise ValueError("Figure number %i already in use" % fignum)
+            if track_plot:
+                tp = tracker_plotter(clear_on_refresh=clear_on_refresh)
+                tp(calc_context, fignum, xstr, ystr, style)
+            else:
+                tp = tracker_textconsole()
+                tp(calc_context, fignum, attribute_name)
+            self.tracked[calc_context] = tp
+
+
+    def show(self):
+        for tp in self.tracked.values():
+            tp.show()
+
+def _escape_underscore(text):
+    """
+    Internal utility to escape any TeX-related underscore ('_') characters in mpl strings
+    """
+    return text.replace('_', '\_')

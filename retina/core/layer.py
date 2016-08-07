@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import calc_context as cc
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.lines import Line2D
@@ -40,7 +41,8 @@ class Layer2D(object):
                          'y_data': [],
                          'plots': [],
                          'patches': [],
-                         'bounds': []
+                         'bounds': [],
+                         'tracker': cc.tracker_manager() 
                          }
         self.name = name
         self.axes = axes
