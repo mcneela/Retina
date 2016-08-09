@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import calc_context as cc
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.lines import Line2D
 from matplotlib.artist import *
 from matplotlib.patches import *
 from retina.core.py2 import *
+from retina.core.calc_context import tracker_manager
 
 class Layer2D(object):
     """
@@ -42,7 +42,7 @@ class Layer2D(object):
                          'plots': [],
                          'patches': [],
                          'bounds': [],
-                         'tracker': cc.tracker_manager() 
+                         'tracker': tracker_manager() 
                          }
         self.name = name
         self.axes = axes
