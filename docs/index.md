@@ -9,3 +9,8 @@
 	- [Python 2 Compatibility](matplotlib/py2.md)
 - Machine Learning
 	- [The Hopfield Network](mlearn/hopfield.md)
+	- [The Restricted Boltzmann Machine](mlearn/boltzmann.md)
+	- [The McCulloch-Pitts Neurons](mlearn/mcpitts.md)
+- Non-Linear Dimensionality Reduction
+	- [The Sectioning Module](nldr/section.md)
+	- [The Sammon Mapping Algorithm](nldr/sammon.md)

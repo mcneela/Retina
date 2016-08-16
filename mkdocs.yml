@@ -14,4 +14,8 @@ pages:
         - 'Python 2 Compatibility': 'matplotlib/py2.md'
     - The Machine Learning Module:
         - 'The Hopfield Network': 'mlearn/hopfield.md'
-
+        - 'The Restricted Boltzmann Machine': 'mlearn/boltzmann.md'
+        - 'The McCulloch-Pitts Neurons': 'mlearn/mcpitts.md'
+    - The Non-Linear Dimensionality Reduction Module:
+        - 'The Sectioning Module': 'nldr/section.md'
+        - 'The Sammon Mapping Algorithm': 'nldr/sammon.md'
