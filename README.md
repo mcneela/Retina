@@ -34,8 +34,8 @@ Perhaps the most significant contribution I made to Fovea was the complete
 overhaul of its design and plotting framework. Prior to my revisions, Fovea
 was set up as a large, class-based structure for tracking, accessing, and modifying
 Matplotlib Axes and Artist attributes. While the package functioned well,
-the API was cluttered and unintuitive. Fovea overrode a number of key Matplotlib
-methods in a rather confusing and undocumented way, which made learning its
+the API was cluttered and, at times, unintuitive. Fovea overrode a number of key Matplotlib
+methods in a sometimes confusing and undocumented way, which made learning its
 operational syntax and semantics quite challenging. Moreover, the package in many
 cases served as merely a thin layer to already sound Matplotlib functionality
 and incurred unnecessary runtime overhead as a result.
